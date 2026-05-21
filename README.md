@@ -1,4 +1,4 @@
-# Forenly · Robot Deployment Simulation Agent
+# Forenly · Lawn Mower Deployment Advisor
 
 > Submission for the **Google Cloud Rapid Agent Hackathon** — "Building Agents for Real-World Challenges"
 
@@ -23,12 +23,12 @@ Given a description of the deployment scene, the agent:
 
 - **Model:** Gemini (Google Cloud)
 - **Orchestration:** Google Cloud Agent Builder
-- **Partner MCP integration:** _TBD — one of_ Arize · Elastic · Fivetran · GitLab · MongoDB · Dynatrace _(team decision pending)_
+- **Partner MCP integration:** **MongoDB MCP** — locked 2026-05-19 (registry + yard profiles + deployment plans store)
 
 ## Submission requirements (Devpost)
 
 - [ ] Hosted project URL
-- [ ] Public repository (this repo is currently private — will flip to public near submission)
+- [x] Public repository
 - [ ] LICENSE file detectable at the top of the repo — ✅ Apache-2.0
 - [ ] ~3 minute demo video
 - [ ] Selected partner track
@@ -46,7 +46,7 @@ Want to contribute? See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Coordination
 
-Day-to-day discussion happens in the **Google_Cloud_Rapid_Agent_Hackathon** Rocket.Chat channel.
+Day-to-day discussion happens in the **#lawn-prs** Discord channel.
 
 ## License
 
