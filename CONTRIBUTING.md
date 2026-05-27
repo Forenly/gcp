@@ -6,7 +6,7 @@ to commit to hackathon-paced work.
 
 ## How to join
 
-1. **Reach out** in the `Google_Cloud_Rapid_Agent_Hackathon` Rocket.Chat channel
+1. **Reach out** on the project **Discord**
    (or via DM to a team member listed in the README). Tell us:
    - Your background and what you'd bring
    - The hours you can commit
@@ -30,4 +30,4 @@ them, and so the team stays coordinated under hackathon time pressure.
 ## Questions
 
 If a team member pointed you here and you're not sure what to do next, just
-message in Rocket.Chat — we'll guide you.
+message on Discord — we'll guide you.
