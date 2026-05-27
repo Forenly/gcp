@@ -1,52 +1,52 @@
-# Forenly · Robot Deployment Simulation Agent
+# gcp — Agentic Change & Configuration Registry (Google Cloud + MongoDB)
 
-> Submission for the **Google Cloud Rapid Agent Hackathon** — "Building Agents for Real-World Challenges"
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+
+> Submission for the **Google Cloud Rapid Agent Hackathon** — "Building Agents for Real-World Challenges". Partner track: **MongoDB MCP**.
 
 ## The problem
 
-Before a robot is physically deployed into a new scene, operators need to know
-what configuration it will actually require to work there. Today this is mostly
-trial-and-error on-site.
+When an engineering or operational change is proposed, the slow part isn't deciding —
+it's recalling what changed before, what configuration items it touched, and what plan
+worked. That knowledge is scattered across tickets, spreadsheets, and people's heads.
 
 ## What we're building
 
-An agent that runs a **pre-deployment simulation** of the target scene and
-outputs the configuration the real robot will need at runtime.
+An agent that turns a **MongoDB-backed registry** of configuration items, change requests,
+and past change plans into a living advisor. Given a new change/incident, the agent:
 
-Given a description of the deployment scene, the agent:
+1. Recalls similar past changes and the plans that resolved them.
+2. Recommends a disposition and drafts a plan (affected items, effectivity, risk).
+3. Writes the new record back to the registry with an audit trail.
 
-1. Sets up a runtime simulation that hosts the robot
-2. Plans the steps the robot will need to take
-3. Returns the configuration required for the implementation plan
+The registry is exposed via the **MongoDB MCP server**, so the agent reads/writes it through MCP.
 
 ## How it's built
 
 - **Model:** Gemini (Google Cloud)
 - **Orchestration:** Google Cloud Agent Builder
-- **Partner MCP integration:** _TBD — one of_ Arize · Elastic · Fivetran · GitLab · MongoDB · Dynatrace _(team decision pending)_
+- **Data + MCP:** MongoDB (collections: `configuration_items`, `change_requests`, `change_plans`, `audit_log`) via **MongoDB MCP server**
 
 ## Submission requirements (Devpost)
 
 - [ ] Hosted project URL
-- [ ] Public repository (this repo is currently private — will flip to public near submission)
-- [ ] LICENSE file detectable at the top of the repo — ✅ Apache-2.0
+- [x] Public repository
+- [x] LICENSE detectable at the top of the repo — Apache-2.0
 - [ ] ~3 minute demo video
-- [ ] Selected partner track
+- [x] Selected partner track — **MongoDB MCP**
 - [ ] Completed Devpost submission form
 
 ## Status
 
 🚧 Early development. Issues, milestones, and design notes are tracked here.
 
+## Contributing
+
+Contributions welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md). Day-to-day discussion happens on the project **Discord**.
+
 ## Team
 
 **Forenly AI Systems** · [github.com/forenly-ai-systems](https://github.com/forenly-ai-systems)
-
-Want to contribute? See [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-## Coordination
-
-Day-to-day discussion happens in the **Google_Cloud_Rapid_Agent_Hackathon** Rocket.Chat channel.
 
 ## License
 
