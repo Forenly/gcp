@@ -1,1 +1,64 @@
-[]
+[
+  {
+    "_id": "plan-001",
+    "yard_id": "yard-suburban-flat-small",
+    "mower_id": "segway-navimow-i105",
+    "created_at": "2026-05-28T10:00:00Z",
+    "fit_reasons": [
+      "yard area is well within the mower max (320 < 500 sqm)",
+      "slope is very gentle (4% < 30% max slope)",
+      "virtual RTK-GPS boundary is perfect for this fenced suburban lawn with open sky access"
+    ],
+    "plan": {
+      "boundary_placement": "Virtual boundary mapped 15cm from the fence line using Navimow App. Set virtual exclusion zones around the flowerbed.",
+      "dock_location": "North-east corner of the lawn, near the outdoor GFCI outlet. Ensure clear view of the sky for GPS antenna.",
+      "first_mow_zones": [
+        {"zone": "main lawn", "priority": 1},
+        {"zone": "front lawn strip", "priority": 2}
+      ],
+      "schedule": "Mon-Wed-Fri 08:00–10:00"
+    }
+  },
+  {
+    "_id": "plan-002",
+    "yard_id": "yard-steep-hilly-large",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-05-28T14:30:00Z",
+    "fit_reasons": [
+      "yard area is within mower capacity (3500 < 5000 sqm)",
+      "extremely steep slopes (65%) require Luba 2 AWD's industry leading 80% climbing ability",
+      "multi-zone GPS navigation allows wire-free setup across large, rough open terrain"
+    ],
+    "plan": {
+      "boundary_placement": "RTK-GPS virtual boundary. Reference station mounted on roof of shed for optimal line-of-sight. Program exclusion zones for the rock piles and steep dropoffs.",
+      "dock_location": "Beside the garden shed. Plugged into the 230V outlet inside the shed via weatherproof cable path.",
+      "first_mow_zones": [
+        {"zone": "lower pasture", "priority": 1},
+        {"zone": "steep embankment", "priority": 2},
+        {"zone": "orchard slope", "priority": 3}
+      ],
+      "schedule": "Daily 10:00–14:00 (to maximize dry grass and solar charge conditions)"
+    }
+  },
+  {
+    "_id": "plan-003",
+    "yard_id": "yard-complex-garden-mid",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-05-29T09:00:00Z",
+    "fit_reasons": [
+      "yard area is within the mower max (1200 < 1600 sqm)",
+      "complex obstacles like pond and patio are handled expertly by Goat G1's 3D LiDAR and visual obstacle avoidance",
+      "virtual beacon technology is ideal for garden layouts that block standard GPS signals"
+    ],
+    "plan": {
+      "boundary_placement": "Place 3 EcoVacs navigation beacons at perimeter corners for triangulation. Map virtual boundaries around the pond, playground, and patio area.",
+      "dock_location": "Patio edge, on flat concrete slab, near patio power outlet.",
+      "first_mow_zones": [
+        {"zone": "main garden area", "priority": 1},
+        {"zone": "playground surround", "priority": 2},
+        {"zone": "patio grass strip", "priority": 3}
+      ],
+      "schedule": "Tue-Thu-Sat 09:00–12:00"
+    }
+  }
+]

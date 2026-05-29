@@ -1,1 +1,80 @@
-[]
+[
+  {
+    "_id": "husqvarna-automower-450x",
+    "brand": "Husqvarna",
+    "model": "Automower 450X NERA",
+    "year": 2024,
+    "max_yard_area_sqm": 5000,
+    "max_slope_pct": 50,
+    "obstacle_handling": "radar + ultrasonic + bumper",
+    "boundary_tech": "wire-or-virtual-epos",
+    "charging": "auto-dock",
+    "price_tier": "premium",
+    "source_url": "https://www.husqvarna.com/uk/robotic-lawn-mowers/automower-450x-nera/"
+  },
+  {
+    "_id": "worx-landroid-l1500",
+    "brand": "Worx",
+    "model": "Landroid L1500 (WR153E)",
+    "year": 2023,
+    "max_yard_area_sqm": 1500,
+    "max_slope_pct": 35,
+    "obstacle_handling": "bumper + optional-acs",
+    "boundary_tech": "wire",
+    "charging": "auto-dock",
+    "price_tier": "mid-range",
+    "source_url": "https://eu.worx.com/en/landroid-l-1500-wr153e/"
+  },
+  {
+    "_id": "mammotion-luba2-5000",
+    "brand": "Mammotion",
+    "model": "Luba 2 AWD 5000",
+    "year": 2024,
+    "max_yard_area_sqm": 5000,
+    "max_slope_pct": 80,
+    "obstacle_handling": "3d-vision + ultrasonic + bumper",
+    "boundary_tech": "virtual-rtk-gps",
+    "charging": "auto-dock",
+    "price_tier": "premium",
+    "source_url": "https://mammotion.com/products/luba-2-awd-5000-robotic-lawn-mower"
+  },
+  {
+    "_id": "segway-navimow-i105",
+    "brand": "Segway",
+    "model": "Navimow i105",
+    "year": 2024,
+    "max_yard_area_sqm": 500,
+    "max_slope_pct": 30,
+    "obstacle_handling": "vision-ai + bumper",
+    "boundary_tech": "virtual-rtk-gps",
+    "charging": "auto-dock",
+    "price_tier": "entry-level",
+    "source_url": "https://navimow.segway.com/product/navimow-i-series.html"
+  },
+  {
+    "_id": "ecovacs-goat-g1",
+    "brand": "Ecovacs",
+    "model": "Goat G1",
+    "year": 2023,
+    "max_yard_area_sqm": 1600,
+    "max_slope_pct": 45,
+    "obstacle_handling": "3d-lidar + visual + bumper",
+    "boundary_tech": "virtual-beacon",
+    "charging": "auto-dock",
+    "price_tier": "mid-range",
+    "source_url": "https://www.ecovacs.com/global/goat-g1"
+  },
+  {
+    "_id": "stihl-imow-5",
+    "brand": "Stihl",
+    "model": "iMow 5",
+    "year": 2023,
+    "max_yard_area_sqm": 1500,
+    "max_slope_pct": 40,
+    "obstacle_handling": "bumper + ultrasonic",
+    "boundary_tech": "wire",
+    "charging": "auto-dock",
+    "price_tier": "mid-range",
+    "source_url": "https://www.stihl.com/stihl-imow-robotic-mower.aspx"
+  }
+]
