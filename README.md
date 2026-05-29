@@ -4,6 +4,10 @@
 
 > Submission for the **Google Cloud Rapid Agent Hackathon** — "Building Agents for Real-World Challenges". Partner track: **MongoDB MCP**.
 
+## Community
+
+Building this in the open — join the team chat on Discord: https://discord.gg/RTBbx3DjqC
+
 ## The problem
 
 Picking the right robotic lawn mower for a specific yard — and getting it set up
