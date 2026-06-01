@@ -8,10 +8,14 @@ equipped with MongoDB MCP database retrieval tools.
 import os
 import sys
 import json
+from pathlib import Path
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, FileResponse, Response
 from pydantic import BaseModel, Field
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
 import vertexai
 from vertexai.generative_models import GenerativeModel, Tool, FunctionDeclaration
 
@@ -171,13 +175,26 @@ mcp_tools = Tool(
 )
 
 
-@app.get("/")
-def read_root():
-    """Health check endpoint displaying MongoDB connectivity and metadata."""
+@app.get("/", response_class=HTMLResponse)
+def landing():
+    """Serve the project landing page (falls back to JSON status if the page is missing)."""
+    index = STATIC_DIR / "index.html"
+    if index.exists():
+        return FileResponse(index)
+    return HTMLResponse("<h1>Lawn Advisor</h1><p>See <a href='/api/status'>/api/status</a>.</p>")
+
+
+@app.get("/favicon.ico")
+def favicon():
+    """Silence the browser's automatic favicon request (no static asset to serve)."""
+    return Response(status_code=204)
+
+
+def _status():
+    """MongoDB connectivity + collection counts."""
     status = {"status": "online", "gcp_project": GCP_PROJECT, "vertex_location": VERTEX_LOCATION, "database_connected": False}
     try:
         client = get_db_client()
-        # Ping the server
         client.client.admin.command("ping")
         status["database_connected"] = True
         status["mower_models_count"] = client.db.mower_models.count_documents({})
@@ -186,6 +203,26 @@ def read_root():
     except Exception as e:
         status["database_error"] = str(e)
     return status
+
+
+@app.get("/health")
+@app.get("/api/status")
+def status_endpoint():
+    """Health check endpoint displaying MongoDB connectivity and metadata."""
+    return _status()
+
+
+@app.get("/api/mowers")
+def list_mowers():
+    """Return the mower registry for the landing page to render."""
+    try:
+        client = get_db_client()
+        mowers = list(client.db.mower_models.find({}).sort("max_yard_area_sqm", 1))
+        for m in mowers:
+            m["_id"] = str(m["_id"])
+        return mowers
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load mower registry: {e}")
 
 
 @app.post("/recommend", response_model=RecommendationResponse)

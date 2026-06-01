@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lawn Advisor — Autonomous Mower Deployment Agent</title>
+<meta name="description" content="An agentic advisor that recommends the right robotic lawn mower and a full deployment plan for any yard. Built on Gemini + Agent Builder + MongoDB MCP on Google Cloud.">
+<style>
+  :root{
+    --green:#1f8a4c; --green-d:#13602f; --green-l:#e8f5ec;
+    --ink:#15231b; --muted:#5b6b61; --line:#e2ebe4; --bg:#f6faf6; --card:#fff;
+    --amber:#c47a12;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+  a{color:var(--green);text-decoration:none}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 22px}
+  /* hero */
+  header.hero{background:linear-gradient(135deg,#13602f 0%,#1f8a4c 60%,#34b56a 100%);color:#fff;padding:54px 0 60px}
+  .badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:4px 11px;border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:.2px}
+  h1{font-size:40px;line-height:1.12;font-weight:800;margin-bottom:14px;letter-spacing:-.5px}
+  .hero p.lede{font-size:18px;max-width:640px;opacity:.94}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+  .btn{display:inline-block;padding:12px 22px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;border:0}
+  .btn-primary{background:#fff;color:var(--green-d)}
+  .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5)}
+  .live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;margin-right:6px;box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.6)}70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:-34px auto 0;position:relative}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 6px 22px rgba(20,60,30,.06)}
+  .stat .n{font-size:26px;font-weight:800;color:var(--green-d)}
+  .stat .l{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+  /* sections */
+  section{padding:46px 0}
+  h2{font-size:25px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);margin-bottom:24px;font-size:15.5px}
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .step .k{width:30px;height:30px;border-radius:8px;background:var(--green-l);color:var(--green-d);font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .step h3{font-size:16px;margin-bottom:5px}
+  .step p{font-size:14px;color:var(--muted)}
+  /* mower cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:14px}
+  .mower{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;transition:.15s}
+  .mower:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 8px 24px rgba(20,60,30,.08)}
+  .mower .brand{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px}
+  .mower .model{font-size:16.5px;font-weight:700;margin:2px 0 12px}
+  .mower .spec{display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0;border-top:1px dashed var(--line)}
+  .mower .spec b{font-weight:600;color:var(--muted)}
+  .tier{display:inline-block;margin-top:11px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .tier.premium{background:#efe6ff;color:#6b32c9}.tier.mid-range{background:#e3f0ff;color:#1b63b8}.tier.entry-level{background:#e7f7ec;color:#1f8a4c}
+  /* demo */
+  .demo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 8px 30px rgba(20,60,30,.06)}
+  .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:12px 0 5px}
+  input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-family:inherit;background:#fcfdfc}
+  input:focus,select:focus{outline:0;border-color:var(--green)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  #run{margin-top:18px;width:100%;background:var(--green);color:#fff}
+  #run:disabled{opacity:.6;cursor:wait}
+  .result{min-height:120px}
+  .placeholder{color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;border:1.5px dashed var(--line);border-radius:12px;padding:30px}
+  .rec{background:var(--green-l);border:1px solid #bfe4cb;border-radius:12px;padding:16px;margin-bottom:12px}
+  .rec .pick{font-size:12px;font-weight:700;color:var(--green-d);text-transform:uppercase;letter-spacing:.5px}
+  .rec .name{font-size:19px;font-weight:800;margin:2px 0 4px}
+  .plan{font-size:13.5px}
+  .plan div{padding:6px 0;border-top:1px solid var(--line)}
+  .plan b{color:var(--green-d)}
+  .alts{font-size:13px;color:var(--muted);margin-top:8px}
+  .spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  /* footer */
+  footer{background:#10261a;color:#cfe0d4;padding:34px 0;font-size:14px}
+  footer a{color:#8fe0a8}
+  .foot-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center}
+  @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.steps,.demo-grid{grid-template-columns:1fr}h1{font-size:31px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="badge-row">
+      <span class="badge">Google Cloud Rapid Agent Hackathon</span>
+      <span class="badge">Gemini + Agent Builder</span>
+      <span class="badge">MongoDB MCP</span>
+      <span class="badge"><span class="live-dot"></span>Live on Cloud Run</span>
+    </div>
+    <h1>Autonomous Lawn-Mower<br>Deployment Advisor</h1>
+    <p class="lede">Describe a yard — size, slope, obstacles, boundaries, charging access — and a Gemini agent reasons over a live mower registry to recommend the right robotic mower and generate a complete installation plan.</p>
+    <div class="cta-row">
+      <button class="btn btn-primary" onclick="document.getElementById('try').scrollIntoView({behavior:'smooth'})">Try the advisor →</button>
+      <a class="btn btn-ghost" href="https://github.com/Forenly/gcp" target="_blank">View on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="n" id="s-mowers">—</div><div class="l">Mowers in registry</div></div>
+    <div class="stat"><div class="n" id="s-yards">—</div><div class="l">Yard archetypes</div></div>
+    <div class="stat"><div class="n" id="s-plans">—</div><div class="l">Plans generated</div></div>
+    <div class="stat"><div class="n" id="s-db">—</div><div class="l">Database</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="sub">A single agent, four MongoDB MCP tools, one grounded recommendation.</p>
+    <div class="steps">
+      <div class="step"><div class="k">1</div><h3>Describe the yard</h3><p>Area, steepest slope, obstacles, boundary type and where power is — that's all the agent needs.</p></div>
+      <div class="step"><div class="k">2</div><h3>Agent queries the registry</h3><p>Gemini calls MCP tools to find mowers within the yard's limits and pull plans from similar yards.</p></div>
+      <div class="step"><div class="k">3</div><h3>Get mower + plan</h3><p>A primary pick, alternatives, and a deployment plan — dock placement, boundaries, zones and schedule — written back to MongoDB.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <h2>The mower registry</h2>
+    <p class="sub">Real robotic mowers the agent grounds its recommendations on. Pulled live from MongoDB.</p>
+    <div class="grid" id="mowers"><p class="placeholder">Loading registry…</p></div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap">
+    <h2>Try the advisor</h2>
+    <p class="sub">Enter a yard and let the live agent recommend a setup. This calls the real Gemini agent — give it a few seconds.</p>
+    <div class="demo">
+      <div class="demo-grid">
+        <div>
+          <div class="row2">
+            <div><label>Area (m²)</label><input id="area" type="number" value="1200"></div>
+            <div><label>Steepest slope (%)</label><input id="slope" type="number" value="15"></div>
+          </div>
+          <label>Obstacles (comma-separated)</label>
+          <input id="obstacles" value="pond, playground">
+          <div class="row2">
+            <div><label>Boundary type</label>
+              <select id="boundary"><option>fenced</option><option>open</option><option>hedged</option></select></div>
+            <div><label>Charging access</label>
+              <select id="charging"><option>patio-outlet</option><option>outlet-near</option><option>shed-power</option><option>garage</option></select></div>
+          </div>
+          <label>Terrain</label>
+          <select id="terrain"><option>complex-obstacles</option><option>flat-grass</option><option>sloped</option><option>mixed</option></select>
+          <button id="run" class="btn" onclick="recommend()">Recommend a mower</button>
+        </div>
+        <div class="result" id="result">
+          <div class="placeholder">Your recommendation and deployment plan will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <div>Lawn Advisor · Google Cloud Rapid Agent Hackathon · deadline 11 Jun 2026</div>
+    <div>
+      <a href="https://github.com/Forenly/gcp" target="_blank">GitHub</a> &nbsp;·&nbsp;
+      <a href="https://discord.gg/RTBbx3DjqC" target="_blank">Join the Discord</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// Load live stats + registry
+fetch('/api/status').then(r=>r.json()).then(s=>{
+  $('s-mowers').textContent = s.mower_models_count ?? '—';
+  $('s-yards').textContent  = s.yards_count ?? '—';
+  $('s-plans').textContent  = s.deployment_plans_count ?? '—';
+  $('s-db').textContent     = s.database_connected ? 'Connected' : 'Offline';
+  if(!s.database_connected) $('s-db').style.color = '#c0392b';
+}).catch(()=>{});
+
+fetch('/api/mowers').then(r=>r.json()).then(list=>{
+  const el = $('mowers');
+  if(!Array.isArray(list) || !list.length){ el.innerHTML='<p class="placeholder">Registry unavailable.</p>'; return; }
+  el.innerHTML = list.map(m=>`
+    <div class="mower">
+      <div class="brand">${esc(m.brand)}</div>
+      <div class="model">${esc(m.model)}</div>
+      <div class="spec"><b>Max area</b><span>${m.max_yard_area_sqm} m²</span></div>
+      <div class="spec"><b>Max slope</b><span>${m.max_slope_pct}%</span></div>
+      <div class="spec"><b>Boundary</b><span>${esc(m.boundary_tech)}</span></div>
+      <span class="tier ${esc(m.price_tier)}">${esc(m.price_tier)}</span>
+    </div>`).join('');
+}).catch(()=>{ $('mowers').innerHTML='<p class="placeholder">Registry unavailable.</p>'; });
+
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+async function recommend(){
+  const btn=$('run'), res=$('result');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Agent is reasoning…';
+  res.innerHTML='<div class="placeholder">Querying the registry and drafting a plan…</div>';
+  const body={
+    area_sqm:+$('area').value, slope_pct:+$('slope').value,
+    obstacles:$('obstacles').value.split(',').map(s=>s.trim()).filter(Boolean),
+    boundary_type:$('boundary').value, charging_access:$('charging').value, terrain:$('terrain').value
+  };
+  try{
+    const r=await fetch('/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail||'request failed');
+    const m=d.recommended_mower||{}, p=d.deployment_plan||{};
+    const alts=(d.alternatives||[]).map(a=>`${esc(a.brand)} ${esc(a.model)}`).join(' · ')||'—';
+    res.innerHTML=`
+      <div class="rec">
+        <div class="pick">Recommended</div>
+        <div class="name">${esc(m.brand||'')} ${esc(m.model||'')}</div>
+        <div style="font-size:13px;color:var(--muted)">${m.max_yard_area_sqm||'?'} m² · ${m.max_slope_pct||'?'}% slope · ${esc(m.boundary_tech||'')}</div>
+      </div>
+      <div class="plan">
+        <div><b>Dock:</b> ${esc(p.dock_location||'—')}</div>
+        <div><b>Boundary:</b> ${esc(p.boundary_placement||'—')}</div>
+        <div><b>Schedule:</b> ${esc(p.schedule||'—')}</div>
+        <div class="alts"><b>Alternatives:</b> ${alts}</div>
+      </div>`;
+  }catch(e){
+    res.innerHTML=`<div class="placeholder" style="color:#c0392b">Error: ${esc(e.message)}</div>`;
+  }finally{ btn.disabled=false; btn.textContent='Recommend a mower'; }
+}
+</script>
+</body>
+</html>

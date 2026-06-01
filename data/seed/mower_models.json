@@ -76,5 +76,18 @@
     "charging": "auto-dock",
     "price_tier": "mid-range",
     "source_url": "https://www.stihl.com/stihl-imow-robotic-mower.aspx"
+  },
+  {
+    "_id": "roboup-t1000-pro",
+    "brand": "RoboUP",
+    "model": "T1000 Pro",
+    "year": 2024,
+    "max_yard_area_sqm": 1800.0,
+    "max_slope_pct": 45.0,
+    "obstacle_handling": "ai-vision (vslam) + bumper",
+    "boundary_tech": "virtual-vslam-rtk",
+    "charging": "auto-dock",
+    "price_tier": "mid-range",
+    "source_url": "https://www.roboup.com/"
   }
 ]
