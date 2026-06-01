@@ -14,11 +14,14 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 import vertexai
-from vertexai.generative_models import GenerativeModel, Tool, FunctionDeclaration
+from vertexai.generative_models import (
+    GenerativeModel, Tool, FunctionDeclaration,
+    GenerationConfig, SafetySetting, HarmCategory, HarmBlockThreshold,
+)
 
 # Local Imports
 from mcp_client import (
@@ -68,30 +71,38 @@ class YardInput(BaseModel):
     terrain: str = Field(default="flat-grass", description="General terrain descriptor", example="complex-obstacles")
     polygon: Optional[List[List[float]]] = Field(default=None, description="Optional yard boundary drawn on a map, as [[lat, lng], ...]. When present, slope and soil are derived from these real-world coordinates.")
 
+# The response shape mirrors the registry, but the model's free-form JSON varies
+# (id vs _id, missing year/charging, zones_and_priorities vs first_mow_zones). Keep
+# brand/model required for a meaningful card; everything else is optional and backfilled
+# from the DB registry in _normalize_recommendation. populate_by_name accepts id or _id.
 class RecommendedMower(BaseModel):
-    id: str = Field(..., alias="_id")
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+    id: str = Field(default="", alias="_id")
     brand: str
     model: str
-    year: int
-    max_yard_area_sqm: float
-    max_slope_pct: float
-    obstacle_handling: str
-    boundary_tech: str
-    charging: str
-    price_tier: str
+    year: Optional[int] = None
+    max_yard_area_sqm: Optional[float] = None
+    max_slope_pct: Optional[float] = None
+    obstacle_handling: Optional[str] = None
+    boundary_tech: Optional[str] = None
+    charging: Optional[str] = None
+    price_tier: Optional[str] = None
     source_url: Optional[str] = None
+    notes: Optional[str] = None
 
 class DeploymentPlanDetails(BaseModel):
-    boundary_placement: str = Field(..., description="Where and how to layout boundaries (wire or virtual GPS)")
-    dock_location: str = Field(..., description="Recommended location for the charging station")
-    first_mow_zones: List[dict] = Field(..., description="Slicing the yard into initial zones with priority")
-    schedule: str = Field(..., description="Suggested weekly or daily schedules")
+    model_config = ConfigDict(extra="ignore")
+    boundary_placement: str = ""
+    dock_location: str = ""
+    first_mow_zones: List[dict] = []
+    schedule: str = ""
 
 class RecommendationResponse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     recommended_mower: RecommendedMower
     alternatives: List[RecommendedMower] = []
     deployment_plan: DeploymentPlanDetails
-    trace_id: str = Field(..., description="The ID of the generated deployment plan inserted in MongoDB")
+    trace_id: str = ""
     site_conditions: Optional[dict] = Field(default=None, description="Slope and soil derived from the map polygon, if one was provided")
 
 
@@ -261,14 +272,74 @@ def _send_with_retry(chat, message, retries=4, base_delay=2.0):
         try:
             return chat.send_message(message)
         except Exception as e:
-            transient = "429" in str(e) or "resource exhausted" in str(e).lower() or \
-                        type(e).__name__ == "ResourceExhausted"
+            name = type(e).__name__
+            msg = str(e).lower()
+            # 429/quota and stochastic response-validation failures (MAX_TOKENS, safety,
+            # empty candidate) are both worth retrying — the model is non-deterministic.
+            transient = "429" in str(e) or "resource exhausted" in msg or \
+                        name in ("ResourceExhausted", "ResponseValidationError") or \
+                        "did not complete successfully" in msg
             if not transient or attempt == retries:
                 raise
-            print(f"Vertex 429/quota — retry {attempt + 1}/{retries} after {delay:.1f}s", file=sys.stderr)
+            print(f"Vertex transient ({name}) — retry {attempt + 1}/{retries} after {delay:.1f}s", file=sys.stderr)
             time.sleep(delay)
             delay *= 2
     raise RuntimeError("unreachable")
+
+
+def _ground_mower(m):
+    """Backfill a mower dict from the DB registry by id, so specs (year/charging/
+    price_tier/…) are real and present even if the model only echoed a few fields.
+    Accepts either 'id' or '_id'. Returns a dict with '_id' set."""
+    if not isinstance(m, dict):
+        return None
+    mid = m.get("_id") or m.get("id")
+    notes = m.get("notes")
+    doc = None
+    if mid:
+        try:
+            doc = get_db_client().db.mower_models.find_one({"_id": mid})
+        except Exception:
+            doc = None
+    out = dict(doc) if doc else dict(m)
+    out["_id"] = mid or out.get("_id") or out.get("id") or ""
+    if notes and "notes" not in out:
+        out["notes"] = notes
+    return out
+
+
+def _normalize_recommendation(data):
+    """Map the model's field-name drift onto the response schema and ground mowers
+    against the registry. Idempotent and defensive — never raises on odd shapes."""
+    if not isinstance(data, dict):
+        return data
+
+    rec = data.get("recommended_mower")
+    if rec is not None:
+        data["recommended_mower"] = _ground_mower(rec)
+
+    alts = data.get("alternatives")
+    if alts is None:
+        alts = data.get("alternative_mowers")  # common model variant
+    if isinstance(alts, list):
+        data["alternatives"] = [g for g in (_ground_mower(a) for a in alts) if g]
+    else:
+        data["alternatives"] = []
+
+    plan = data.get("deployment_plan")
+    if isinstance(plan, dict):
+        if "first_mow_zones" not in plan:
+            zones = plan.get("zones_and_priorities") or plan.get("zones")
+            if isinstance(zones, list):
+                plan["first_mow_zones"] = zones
+        # trace_id often lands inside the plan as plan_id
+        if not data.get("trace_id") and plan.get("plan_id"):
+            data["trace_id"] = plan["plan_id"]
+
+    if not data.get("trace_id"):
+        data["trace_id"] = data.get("plan_id") or ""
+
+    return data
 
 
 @app.post("/recommend", response_model=RecommendationResponse)
@@ -315,14 +386,28 @@ def get_recommendation(yard: YardInput):
                 "Your objective is to ingest a yard's specifications and provide a highly customized, robust installation plan.\n"
                 "You MUST follow these strict reasoning steps:\n"
                 "1. Find suitable mowers from the database using 'find_mowers' by providing the yard's area and slope steepness. "
-                "The mowers must have capacity limits GREATER than or EQUAL to the yard's requirements.\n"
+                "Prefer mowers whose capacity limits are GREATER than or EQUAL to the yard's requirements.\n"
+                "   IMPORTANT: If the yard's area exceeds EVERY mower's max area (no single unit can cover it), DO NOT give up. "
+                "Recommend the highest-capacity mower available, and in the deployment plan explicitly state that multiple units "
+                "or zone-splitting are required to cover the full area (e.g. ceil(area / mower_max_area) units).\n"
                 "2. Find similar yards in the database using 'find_similar_yards' and pull their past plans using 'find_plans' to see how previous installations were designed.\n"
                 "3. Reason about the options. Select the best primary mower and list the other candidates as alternatives.\n"
                 "4. Draft a custom deployment plan detailing: charging dock location, virtual or physical boundary wire placement, zones with priorities, and schedule.\n"
                 "5. Save your final recommendation using 'insert_plan' and note the generated plan ID.\n"
-                "6. Return a final JSON object conforming exactly to the required output format. Do NOT hallucinate data outside what is fetched from tools."
+                "6. Return a final JSON object conforming exactly to the required output format. Do NOT hallucinate data outside what is fetched from tools. "
+                "You MUST always return a recommended_mower — never respond that no mower was found."
             ),
-            tools=[mcp_tools]
+            tools=[mcp_tools],
+            generation_config=GenerationConfig(max_output_tokens=8192, temperature=0.4),
+            safety_settings=[
+                SafetySetting(category=c, threshold=HarmBlockThreshold.BLOCK_NONE)
+                for c in (
+                    HarmCategory.HARM_CATEGORY_HARASSMENT,
+                    HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                )
+            ],
         )
         
         # Start a multi-turn chat session to let Gemini execute tools iteratively
@@ -411,6 +496,11 @@ def get_recommendation(yard: YardInput):
                 "deployment_plan": last_plan["plan"],
                 "trace_id": last_plan["_id"]
             }
+
+        # The model's field names drift (id/_id, alternative_mowers, zones_and_priorities,
+        # plan_id) and it often omits registry specs. Normalize + ground against the DB so
+        # the strict response_model always validates and the card shows real specs.
+        parsed_data = _normalize_recommendation(parsed_data)
 
         if site_conditions:
             parsed_data["site_conditions"] = site_conditions

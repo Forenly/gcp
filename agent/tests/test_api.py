@@ -136,10 +136,21 @@ class _FakeModel:
         return _FakeChat()
 
 
+class _NoDB:
+    """Fake get_db_client() return for /recommend tests: registry lookups miss, so
+    normalization keeps the model's echoed mower fields without touching real Mongo."""
+    class db:
+        class mower_models:
+            @staticmethod
+            def find_one(_q):
+                return None
+
+
 def test_recommend_polygon_enrichment(client, monkeypatch):
     """A drawn polygon must trigger geo enrichment, override slope, and surface
     site_conditions in the response."""
     monkeypatch.setattr(server, "GenerativeModel", _FakeModel)
+    monkeypatch.setattr(server, "get_db_client", lambda: _NoDB())
     monkeypatch.setattr(server.geo, "enrich_site", lambda poly: {
         "slope": {"slope_pct": 21.4, "elevation_min_m": 100, "elevation_max_m": 110, "samples": 5},
         "soil": {"wrb_class": "Kastanozems"},
@@ -171,6 +182,24 @@ def test_send_with_retry_recovers_from_429(monkeypatch):
     assert calls["n"] == 3  # failed twice, succeeded on the third
 
 
+def test_send_with_retry_recovers_from_response_validation(monkeypatch):
+    monkeypatch.setattr(server.time, "sleep", lambda _s: None)
+    calls = {"n": 0}
+
+    class ResponseValidationError(Exception):
+        pass
+
+    class Chat:
+        def send_message(self, _msg):
+            calls["n"] += 1
+            if calls["n"] < 2:
+                raise ResponseValidationError("The model response did not complete successfully.")
+            return "ok"
+
+    assert server._send_with_retry(Chat(), "hi", retries=3, base_delay=0) == "ok"
+    assert calls["n"] == 2
+
+
 def test_send_with_retry_reraises_non_quota(monkeypatch):
     monkeypatch.setattr(server.time, "sleep", lambda _s: None)
 
@@ -193,8 +222,60 @@ def test_send_with_retry_gives_up_after_retries(monkeypatch):
         server._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
 
 
+def test_normalize_recommendation_maps_and_grounds(monkeypatch):
+    full = {"_id": "mammotion-luba2-5000", "brand": "Mammotion", "model": "Luba 2 AWD 5000",
+            "year": 2024, "max_yard_area_sqm": 5000, "max_slope_pct": 80,
+            "obstacle_handling": "vision", "boundary_tech": "virtual-rtk-gps",
+            "charging": "auto-dock", "price_tier": "premium"}
+
+    class DB:
+        class db:
+            class mower_models:
+                @staticmethod
+                def find_one(q):
+                    return full if q.get("_id") == "mammotion-luba2-5000" else None
+    monkeypatch.setattr(server, "get_db_client", lambda: DB())
+
+    raw = {
+        "recommended_mower": {"id": "mammotion-luba2-5000", "brand": "Mammotion",
+                              "model": "Luba 2 AWD 5000", "notes": "Two units needed."},
+        "alternative_mowers": [{"id": "mammotion-luba2-5000", "brand": "X", "model": "Y"}],
+        "deployment_plan": {"dock_location": "patio", "boundary_placement": "perimeter",
+                            "zones_and_priorities": [{"zone": "front", "priority": 1}],
+                            "plan_id": "plan-abc", "schedule": "Mon/Wed/Fri"},
+    }
+    out = server._normalize_recommendation(raw)
+    # mower grounded from DB (year/charging/price_tier backfilled) + notes preserved + _id set
+    assert out["recommended_mower"]["_id"] == "mammotion-luba2-5000"
+    assert out["recommended_mower"]["year"] == 2024
+    assert out["recommended_mower"]["charging"] == "auto-dock"
+    assert out["recommended_mower"]["notes"] == "Two units needed."
+    # alternative_mowers -> alternatives, also grounded
+    assert out["alternatives"][0]["price_tier"] == "premium"
+    # zones_and_priorities -> first_mow_zones; plan_id -> trace_id
+    assert out["deployment_plan"]["first_mow_zones"] == [{"zone": "front", "priority": 1}]
+    assert out["trace_id"] == "plan-abc"
+
+
+def test_normalize_recommendation_handles_missing_db(monkeypatch):
+    # If the id isn't in the registry, keep the model's own fields without raising.
+    class DB:
+        class db:
+            class mower_models:
+                @staticmethod
+                def find_one(q):
+                    return None
+    monkeypatch.setattr(server, "get_db_client", lambda: DB())
+    out = server._normalize_recommendation(
+        {"recommended_mower": {"id": "unknown", "brand": "B", "model": "M"}})
+    assert out["recommended_mower"]["_id"] == "unknown"
+    assert out["recommended_mower"]["brand"] == "B"
+    assert out["alternatives"] == []
+
+
 def test_recommend_without_polygon_no_enrichment(client, monkeypatch):
     monkeypatch.setattr(server, "GenerativeModel", _FakeModel)
+    monkeypatch.setattr(server, "get_db_client", lambda: _NoDB())
 
     def fail(_):
         raise AssertionError("enrich_site must not be called without a polygon")
