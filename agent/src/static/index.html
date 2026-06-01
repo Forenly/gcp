@@ -143,10 +143,10 @@
 
     <div class="mapcard">
       <div class="maptools">
-        <input id="addr" placeholder="🔍 Search an address to find your yard…" />
+        <input id="addr" placeholder="🔍 Type an address and press Enter…" />
         <button id="drawbtn" class="btn" onclick="startDraw()">✏️ Draw lawn</button>
         <button id="clearbtn" class="btn btn-clear" onclick="clearDraw()">Clear</button>
-        <span id="mapinfo" class="mapinfo">Tip: click the map corners of your lawn, then close the shape.</span>
+        <span id="mapinfo" class="mapinfo">Find your address, click "Draw lawn", click each corner, then double-click to finish.</span>
       </div>
       <div id="map"></div>
     </div>
@@ -260,57 +260,63 @@ async function recommend(){
   }finally{ btn.disabled=false; btn.textContent='Recommend a mower'; }
 }
 
-/* ---- Google Maps: search address + draw lawn → area, and feed polygon to the agent ---- */
-let map, drawingManager, currentPolygon=null;
+/* ---- Google Maps: geocode address + click-to-draw lawn → area, feed polygon to the agent ----
+   Uses core Maps + Geocoder + manual polygon drawing (no deprecated Drawing library,
+   no legacy Places Autocomplete — both unavailable to new API customers). */
+let map, geocoder, poly=null, drawing=false;
 window.lawnPolygon=null;
 
 function initMap(){
   map=new google.maps.Map($('map'),{
     center:{lat:39.5,lng:-98.35}, zoom:4, mapTypeId:'satellite', tilt:0,
-    streetViewControl:false, fullscreenControl:false, mapTypeControl:true
+    streetViewControl:false, fullscreenControl:false, mapTypeControl:true,
+    disableDoubleClickZoom:true
   });
-  try{
-    const ac=new google.maps.places.Autocomplete($('addr'),{fields:['geometry']});
-    ac.addListener('place_changed',()=>{ const pl=ac.getPlace();
-      if(pl.geometry&&pl.geometry.location){ map.setCenter(pl.geometry.location); map.setZoom(20); } });
-  }catch(e){}
-  drawingManager=new google.maps.drawing.DrawingManager({
-    drawingMode:null, drawingControl:false,
-    polygonOptions:{fillColor:'#34b56a',fillOpacity:.28,strokeColor:'#13602f',strokeWeight:2,editable:true}
-  });
-  drawingManager.setMap(map);
-  google.maps.event.addListener(drawingManager,'polygoncomplete',poly=>{
-    if(currentPolygon) currentPolygon.setMap(null);
-    currentPolygon=poly;
-    drawingManager.setDrawingMode(null);
-    syncPolygon();
-    poly.getPath().addListener('set_at',syncPolygon);
-    poly.getPath().addListener('insert_at',syncPolygon);
+  geocoder=new google.maps.Geocoder();
+  $('addr').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); geoSearch(); }});
+  map.addListener('click',e=>{ if(drawing) poly.getPath().push(e.latLng); });
+  map.addListener('dblclick',e=>{ if(drawing) finishDraw(); });
+}
+function geoSearch(){
+  const q=$('addr').value.trim(); if(!q||!geocoder) return;
+  geocoder.geocode({address:q},(res,status)=>{
+    if(status==='OK'&&res&&res[0]){ map.setCenter(res[0].geometry.location); map.setZoom(20); }
+    else $('mapinfo').textContent='Address not found — try a more specific search.';
   });
 }
 function startDraw(){
-  if(!window.google||!drawingManager) return;
-  if(currentPolygon){ currentPolygon.setMap(null); currentPolygon=null; }
-  drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-  $('mapinfo').textContent='Click each corner of your lawn, then click the first point again to close it.';
+  if(!window.google) return;
+  clearDraw();
+  drawing=true;
+  poly=new google.maps.Polygon({map, paths:[], fillColor:'#34b56a', fillOpacity:.28,
+    strokeColor:'#13602f', strokeWeight:2, editable:true, clickable:false});
+  poly.getPath().addListener('set_at',syncPolygon);
+  poly.getPath().addListener('insert_at',syncPolygon);
+  $('mapinfo').textContent='Click each corner of your lawn, then double-click to finish.';
+}
+function finishDraw(){
+  drawing=false;
+  if(!poly || poly.getPath().getLength()<3){ clearDraw(); $('mapinfo').textContent='Need at least 3 corners — click "Draw lawn" and try again.'; return; }
+  syncPolygon();
 }
 function clearDraw(){
-  if(currentPolygon){ currentPolygon.setMap(null); currentPolygon=null; }
+  drawing=false;
+  if(poly){ poly.setMap(null); poly=null; }
   window.lawnPolygon=null;
-  if(drawingManager) drawingManager.setDrawingMode(null);
-  $('mapinfo').textContent='Tip: click the map corners of your lawn, then close the shape.';
+  $('mapinfo').textContent='Tip: click "Draw lawn", click each corner of your lawn, then double-click to finish.';
 }
 function syncPolygon(){
-  if(!currentPolygon) return;
-  const path=currentPolygon.getPath(), coords=[];
+  if(!poly) return;
+  const path=poly.getPath(), coords=[];
   for(let i=0;i<path.getLength();i++){ const pt=path.getAt(i); coords.push([pt.lat(),pt.lng()]); }
+  if(coords.length<3) return;
   window.lawnPolygon=coords;
   const area=google.maps.geometry.spherical.computeArea(path);
   $('area').value=Math.round(area);
-  $('mapinfo').innerHTML=`✅ Lawn drawn — <b>${Math.round(area).toLocaleString()} m²</b>. Area filled in; slope &amp; soil are read from these coordinates when you hit Recommend.`;
+  $('mapinfo').innerHTML=`✅ Lawn drawn — <b>${Math.round(area).toLocaleString()} m²</b>. Slope &amp; soil are read from these coordinates when you hit Recommend.`;
 }
 window.initMap=initMap;
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=__MAPS_BROWSER_KEY__&libraries=places,drawing,geometry&callback=initMap"></script>
+<script async src="https://maps.googleapis.com/maps/api/js?key=__MAPS_BROWSER_KEY__&libraries=geometry&loading=async&callback=initMap"></script>
 </body>
 </html>
