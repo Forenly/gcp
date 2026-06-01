@@ -66,16 +66,21 @@ def test_geocode_endpoint_ok(client, monkeypatch):
                         lambda q: {"lat": 51.5, "lng": -0.12, "formatted_address": "London, UK"})
     r = client.get("/api/geocode", params={"q": "London"})
     assert r.status_code == 200
-    assert r.json()["formatted_address"] == "London, UK"
+    body = r.json()
+    assert body["found"] is True
+    assert body["formatted_address"] == "London, UK"
 
 
 def test_geocode_endpoint_empty_is_400(client):
     assert client.get("/api/geocode", params={"q": "  "}).status_code == 400
 
 
-def test_geocode_endpoint_not_found_is_404(client, monkeypatch):
+def test_geocode_endpoint_not_found_is_200_found_false(client, monkeypatch):
+    # Vague query (e.g. just "stadium") → 200 + found:false, NOT a console-noisy 404.
     monkeypatch.setattr(server.geo, "geocode", lambda q: None)
-    assert client.get("/api/geocode", params={"q": "zzzqxnotaplace"}).status_code == 404
+    r = client.get("/api/geocode", params={"q": "stadium"})
+    assert r.status_code == 200
+    assert r.json() == {"found": False}
 
 
 # ------------------------------------------------------------------ /recommend

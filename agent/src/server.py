@@ -222,14 +222,17 @@ def status_endpoint():
 @app.get("/api/geocode")
 def geocode_endpoint(q: str):
     """Proxy Google Geocoding via the server key (browser key is referrer-locked and
-    rejected by the Geocoding web service). Returns {lat, lng, formatted_address}."""
+    rejected by the Geocoding web service). Returns {found, lat, lng, formatted_address}.
+
+    A no-match (too vague a query, e.g. just 'stadium') returns 200 with found=false
+    rather than 404 — so the browser console stays clean and the UI shows a friendly hint."""
     q = (q or "").strip()
     if not q:
         raise HTTPException(status_code=400, detail="Missing query parameter 'q'.")
     result = geo.geocode(q)
     if not result:
-        raise HTTPException(status_code=404, detail="Address not found.")
-    return result
+        return {"found": False}
+    return {"found": True, **result}
 
 
 @app.get("/api/mowers")
