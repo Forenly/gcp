@@ -554,6 +554,20 @@ def get_recommendation(yard: YardInput):
         # the strict response_model always validates and the card shows real specs.
         parsed_data = _normalize_recommendation(parsed_data)
 
+        # Grounding fallback: the agent's tool use is non-deterministic (it sometimes
+        # answers from find_mowers alone). Guarantee the MongoDB provenance panel by
+        # retrieving similar yards + their plans server-side when the loop didn't capture
+        # them — same MCP-backed queries, so the "grounded in N installs" claim is real.
+        try:
+            if not grounding_yards:
+                grounding_yards = tool_find_similar_yards(yard.area_sqm, yard.slope_pct, yard.terrain) or []
+            if not grounding_plans and grounding_yards:
+                yard_ids = [y["_id"] for y in grounding_yards if isinstance(y, dict) and y.get("_id")]
+                if yard_ids:
+                    grounding_plans = tool_find_plans(yard_ids=yard_ids) or []
+        except Exception as e:
+            print(f"Grounding fallback failed: {e}", file=sys.stderr)
+
         grounding = _build_grounding(grounding_yards, grounding_plans)
         if grounding:
             parsed_data["grounding"] = grounding
