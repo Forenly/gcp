@@ -151,6 +151,43 @@ def test_recommend_polygon_enrichment(client, monkeypatch):
     assert body["site_conditions"]["soil"]["wrb_class"] == "Kastanozems"
 
 
+def test_send_with_retry_recovers_from_429(monkeypatch):
+    monkeypatch.setattr(server.time, "sleep", lambda _s: None)  # no real waiting
+    calls = {"n": 0}
+
+    class Chat:
+        def send_message(self, _msg):
+            calls["n"] += 1
+            if calls["n"] < 3:
+                raise RuntimeError("429 Resource exhausted. Please try again later.")
+            return "ok"
+
+    assert server._send_with_retry(Chat(), "hi", retries=4, base_delay=0) == "ok"
+    assert calls["n"] == 3  # failed twice, succeeded on the third
+
+
+def test_send_with_retry_reraises_non_quota(monkeypatch):
+    monkeypatch.setattr(server.time, "sleep", lambda _s: None)
+
+    class Chat:
+        def send_message(self, _msg):
+            raise ValueError("bad request — not a quota error")
+
+    with pytest.raises(ValueError):
+        server._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
+
+
+def test_send_with_retry_gives_up_after_retries(monkeypatch):
+    monkeypatch.setattr(server.time, "sleep", lambda _s: None)
+
+    class Chat:
+        def send_message(self, _msg):
+            raise RuntimeError("429 resource exhausted")
+
+    with pytest.raises(RuntimeError, match="429"):
+        server._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
+
+
 def test_recommend_without_polygon_no_enrichment(client, monkeypatch):
     monkeypatch.setattr(server, "GenerativeModel", _FakeModel)
 

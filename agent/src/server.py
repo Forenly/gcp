@@ -8,6 +8,7 @@ equipped with MongoDB MCP database retrieval tools.
 import os
 import sys
 import json
+import time
 from pathlib import Path
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
@@ -244,6 +245,29 @@ def list_mowers():
         raise HTTPException(status_code=500, detail=f"Failed to load mower registry: {e}")
 
 
+def _send_with_retry(chat, message, retries=4, base_delay=2.0):
+    """Send a message to the Gemini chat, retrying on 429 / resource-exhausted.
+
+    A single /recommend makes several sequential model round-trips (the tool loop),
+    so a burst can trip the per-minute quota. Exponential backoff keeps the demo
+    resilient instead of surfacing a hard 429 to the user. Non-quota errors re-raise
+    immediately.
+    """
+    delay = base_delay
+    for attempt in range(retries + 1):
+        try:
+            return chat.send_message(message)
+        except Exception as e:
+            transient = "429" in str(e) or "resource exhausted" in str(e).lower() or \
+                        type(e).__name__ == "ResourceExhausted"
+            if not transient or attempt == retries:
+                raise
+            print(f"Vertex 429/quota — retry {attempt + 1}/{retries} after {delay:.1f}s", file=sys.stderr)
+            time.sleep(delay)
+            delay *= 2
+    raise RuntimeError("unreachable")
+
+
 @app.post("/recommend", response_model=RecommendationResponse)
 def get_recommendation(yard: YardInput):
     """
@@ -315,7 +339,7 @@ def get_recommendation(yard: YardInput):
         )
         
         # Send prompt and run tool execution loop
-        response = chat.send_message(prompt)
+        response = _send_with_retry(chat, prompt)
         
         # Tool handling loop
         max_iterations = 6
@@ -353,7 +377,7 @@ def get_recommendation(yard: YardInput):
                     )
                 )
             # Send every tool response back in a single turn.
-            response = chat.send_message(tool_responses)
+            response = _send_with_retry(chat, tool_responses)
 
         # The tool loop finished, now parse Gemini's final verbal response.
         # We need a clean JSON out of Gemini. Let's ask it to format its final response if needed, 
