@@ -16,7 +16,7 @@
   a{color:var(--green);text-decoration:none}
   .wrap{max-width:1060px;margin:0 auto;padding:0 22px}
   /* hero */
-  header.hero{background:linear-gradient(135deg,#13602f 0%,#1f8a4c 60%,#34b56a 100%);color:#fff;padding:54px 0 60px}
+  header.hero{background:linear-gradient(135deg,rgba(8,40,20,.88) 0%,rgba(20,96,47,.74) 55%,rgba(52,181,106,.55) 100%),url('/static/img/hero.jpg') center/cover no-repeat;color:#fff;padding:54px 0 60px}
   .badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
   .badge{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:4px 11px;border-radius:999px;font-size:12.5px;font-weight:600;letter-spacing:.2px}
   h1{font-size:40px;line-height:1.12;font-weight:800;margin-bottom:14px;letter-spacing:-.5px}
@@ -37,7 +37,8 @@
   h2{font-size:25px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
   .sub{color:var(--muted);margin-bottom:24px;font-size:15.5px}
   /* steps */
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .step .icon{font-size:22px;margin-bottom:8px}
   .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
   .step .k{width:30px;height:30px;border-radius:8px;background:var(--green-l);color:var(--green-d);font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
   .step h3{font-size:16px;margin-bottom:5px}
@@ -110,6 +111,7 @@
   footer{background:#10261a;color:#cfe0d4;padding:34px 0;font-size:14px}
   footer a{color:#8fe0a8}
   .foot-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center}
+  @media(max-width:980px){.steps{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.steps,.demo-grid{grid-template-columns:1fr}h1{font-size:31px}}
 </style>
 </head>
@@ -135,19 +137,21 @@
   <div class="stats">
     <div class="stat"><div class="n" id="s-mowers">—</div><div class="l">Mowers in registry</div></div>
     <div class="stat"><div class="n" id="s-yards">—</div><div class="l">Yard archetypes</div></div>
-    <div class="stat"><div class="n" id="s-plans">—</div><div class="l">Plans generated</div></div>
+    <div class="stat"><div class="n" id="s-plans">—</div><div class="l">Deployment plans</div></div>
     <div class="stat"><div class="n" id="s-db">—</div><div class="l">Database</div></div>
   </div>
+  <p class="sub" style="text-align:center;margin-top:14px">⛁ <b>Grounded in real deployments.</b> Every plan is checked against this live MongoDB registry — mower configurations, yard archetypes and historical installs the agent reasons over.</p>
 </div>
 
 <section>
   <div class="wrap">
-    <h2>How it works</h2>
-    <p class="sub">A single agent, four MongoDB MCP tools, one grounded recommendation.</p>
+    <h2>From yard to autonomous deployment</h2>
+    <p class="sub">A single Gemini agent, four MongoDB MCP tools, one grounded deployment plan — not a chatbot.</p>
     <div class="steps">
-      <div class="step"><div class="k">1</div><h3>Describe the yard</h3><p>Area, steepest slope, obstacles, boundary type and where power is — that's all the agent needs.</p></div>
-      <div class="step"><div class="k">2</div><h3>Agent queries the registry</h3><p>Gemini calls MCP tools to find mowers within the yard's limits and pull plans from similar yards.</p></div>
-      <div class="step"><div class="k">3</div><h3>Get mower + plan</h3><p>A primary pick, alternatives, and a deployment plan — dock placement, boundaries, zones and schedule — written back to MongoDB.</p></div>
+      <div class="step"><div class="icon">🧠</div><div class="k">1</div><h3>Understand the yard</h3><p>Draw it on a map or type the numbers. The agent reads real area, slope and soil from the coordinates.</p></div>
+      <div class="step"><div class="icon">🤖</div><div class="k">2</div><h3>Match the robot fleet</h3><p>Gemini calls MCP tools to filter the MongoDB registry to mowers within the yard's area, slope and boundary limits.</p></div>
+      <div class="step"><div class="icon">🧩</div><div class="k">3</div><h3>Plan the deployment</h3><p>Grounded in similar yard archetypes and historical deployments, it drafts dock, boundaries, zones and schedule — written back to MongoDB.</p></div>
+      <div class="step"><div class="icon">🛰️</div><div class="k">4</div><h3>Roll out autonomously</h3><p>A Day 1–4 rollout — boundary mapping, dock setup, calibration, autonomous operation — ready to execute on site.</p></div>
     </div>
   </div>
 </section>
@@ -192,7 +196,7 @@
           </div>
           <label>Terrain</label>
           <select id="terrain"><option>complex-obstacles</option><option>flat-grass</option><option>sloped</option><option>mixed</option></select>
-          <button id="run" class="btn" onclick="recommend()">Recommend a mower</button>
+          <button id="run" class="btn btn-primary" onclick="recommend()">Generate Deployment Plan</button>
         </div>
         <div class="result" id="result">
           <div class="placeholder">Your recommendation and deployment plan will appear here.</div>
@@ -292,7 +296,7 @@ async function recommend(){
       </div>`+rolloutHtml(d.rollout);
   }catch(e){
     res.innerHTML=`<div class="placeholder" style="color:#c0392b">Error: ${esc(e.message)}</div>`;
-  }finally{ stopProgress(); btn.disabled=false; btn.textContent='Recommend a mower'; }
+  }finally{ stopProgress(); btn.disabled=false; btn.textContent='Generate Deployment Plan'; }
 }
 
 /* ---- Agentic progress stepper: visualizes the MCP tool-call workflow while Gemini

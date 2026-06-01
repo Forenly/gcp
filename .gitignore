@@ -25,3 +25,10 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Uploaded source images dumped in repo root (kept in ~/lawn-img-src)
+/*.jpeg
+/*.jpg
+/*.png
+._*
+.DS_Store

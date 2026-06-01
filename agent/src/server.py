@@ -15,6 +15,7 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse, Response
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ConfigDict
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -61,6 +62,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve static assets (hero/section imagery) from static/.
+if (STATIC_DIR / "img").exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Request & Response Schemas
 class YardInput(BaseModel):
