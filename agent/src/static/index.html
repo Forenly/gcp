@@ -80,6 +80,17 @@
   .site{background:#fff8ec;border:1px solid #f0dcb6;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px}
   .site b{color:var(--amber)}
   .site .pill{display:inline-block;background:#fff;border:1px solid #f0dcb6;border-radius:999px;padding:2px 9px;margin:3px 5px 0 0;font-size:12px}
+  /* progress stepper */
+  .prog{padding:4px 2px}
+  .prog-h{font-weight:600;color:var(--green-d);margin-bottom:12px;display:flex;align-items:center}
+  .spin-d{border-color:rgba(19,96,47,.25);border-top-color:var(--green-d)}
+  .prog-step{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px;color:var(--muted);transition:color .3s}
+  .prog-step .dot{width:16px;height:16px;border-radius:50%;border:2px solid #d4ddd6;flex:none;position:relative;transition:all .3s}
+  .prog-step.active{color:var(--ink);font-weight:500}
+  .prog-step.active .dot{border-color:var(--green);border-top-color:transparent;animation:rot .7s linear infinite}
+  .prog-step.done{color:var(--green-d)}
+  .prog-step.done .dot{background:var(--green);border-color:var(--green);animation:none}
+  .prog-step.done .dot::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
   .spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-3px;margin-right:8px}
   @keyframes rot{to{transform:rotate(360deg)}}
   /* footer */
@@ -219,13 +230,13 @@ function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt
 async function recommend(){
   const btn=$('run'), res=$('result');
   btn.disabled=true; btn.innerHTML='<span class="spin"></span>Agent is reasoning…';
-  res.innerHTML='<div class="placeholder">Querying the registry and drafting a plan…</div>';
   const body={
     area_sqm:+$('area').value, slope_pct:+$('slope').value,
     obstacles:$('obstacles').value.split(',').map(s=>s.trim()).filter(Boolean),
     boundary_type:$('boundary').value, charging_access:$('charging').value, terrain:$('terrain').value
   };
   if(window.lawnPolygon && window.lawnPolygon.length>=3) body.polygon = window.lawnPolygon;
+  startProgress(!!body.polygon);
   try{
     const r=await fetch('/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json();
@@ -257,8 +268,35 @@ async function recommend(){
       </div>`;
   }catch(e){
     res.innerHTML=`<div class="placeholder" style="color:#c0392b">Error: ${esc(e.message)}</div>`;
-  }finally{ btn.disabled=false; btn.textContent='Recommend a mower'; }
+  }finally{ stopProgress(); btn.disabled=false; btn.textContent='Recommend a mower'; }
 }
+
+/* ---- Agentic progress stepper: visualizes the MCP tool-call workflow while Gemini
+   reasons (the call takes ~25-40s). Steps advance on a timer; the last step holds a
+   spinner until the real response arrives, then everything is replaced by the result. */
+let progTimer=null;
+function startProgress(hasPolygon){
+  const steps=[];
+  if(hasPolygon) steps.push('Reading slope &amp; soil from your map location');
+  steps.push('Querying the mower registry (MongoDB MCP)');
+  steps.push('Matching mowers to your yard’s area &amp; slope');
+  steps.push('Pulling plans from similar yards');
+  steps.push('Drafting your deployment plan &amp; writing it back');
+  $('result').innerHTML='<div class="prog"><div class="prog-h">'+
+    '<span class="spin spin-d"></span>Agent is reasoning…</div>'+
+    steps.map((s,i)=>`<div class="prog-step" data-i="${i}"><span class="dot"></span><span class="lbl">${s}</span></div>`).join('')+
+    '</div>';
+  const els=[...document.querySelectorAll('.prog-step')];
+  let i=0;
+  const mark=()=>{
+    els.forEach((el,j)=>{ el.classList.toggle('done',j<i); el.classList.toggle('active',j===i); });
+  };
+  mark();
+  progTimer=setInterval(()=>{
+    if(i<els.length-1){ i++; mark(); }  // hold on the last step until the response lands
+  }, 4500);
+}
+function stopProgress(){ if(progTimer){ clearInterval(progTimer); progTimer=null; } }
 
 /* ---- Google Maps: geocode address (via our backend) + click-to-draw lawn → area ----
    Address search is proxied through /api/geocode (server key) because the browser key is
