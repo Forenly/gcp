@@ -69,16 +69,22 @@ class DatabaseClient:
         slope_min = max(0, slope_pct - 15)
         slope_max = slope_pct + 15
         
-        query = {
+        base_query = {
             "area_sqm": {"$gte": area_min, "$lte": area_max},
             "slope_pct": {"$gte": slope_min, "$lte": slope_max}
         }
-        
-        if terrain:
-            query["terrain"] = {"$regex": terrain, "$options": "i"}
-            
+
         try:
-            yards = list(self.db.yards.find(query).limit(5))
+            # Prefer a terrain match, but a tight terrain filter can return nothing
+            # (the only matching archetype may be out of the area/slope band). Fall back
+            # to area+slope similarity so the agent always has historical context to
+            # reason over — and the grounding panel always has real installs to cite.
+            yards = []
+            if terrain:
+                q = dict(base_query, terrain={"$regex": terrain, "$options": "i"})
+                yards = list(self.db.yards.find(q).limit(5))
+            if not yards:
+                yards = list(self.db.yards.find(base_query).limit(5))
             for y in yards:
                 y["_id"] = str(y["_id"])
             return yards
