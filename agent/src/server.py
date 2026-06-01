@@ -25,9 +25,9 @@ from mcp_client import (
 )
 
 # Load environment
-GCP_PROJECT = os.getenv("GCP_PROJECT", "project-f3c4dc98-497f-4eee-b60")
+GCP_PROJECT = os.getenv("GCP_PROJECT", "project-8925a333-2bd2-47ba-af2")
 VERTEX_LOCATION = os.getenv("VERTEX_LOCATION", "us-central1")
-GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-pro-001")
+GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash-001")
 
 # Initialize Vertex AI
 try:

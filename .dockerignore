@@ -1,0 +1,10 @@
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+.env
+.env.*
+docs/
+data/
+*.md
+!agent/requirements.txt
