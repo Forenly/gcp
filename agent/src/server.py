@@ -104,6 +104,7 @@ class RecommendationResponse(BaseModel):
     deployment_plan: DeploymentPlanDetails
     trace_id: str = ""
     site_conditions: Optional[dict] = Field(default=None, description="Slope and soil derived from the map polygon, if one was provided")
+    grounding: Optional[dict] = Field(default=None, description="What the agent retrieved from MongoDB (similar yards + historical plans) to ground the recommendation")
 
 
 # Define Function Declarations for Gemini Tools
@@ -287,6 +288,47 @@ def _send_with_retry(chat, message, retries=4, base_delay=2.0):
     raise RuntimeError("unreachable")
 
 
+_mower_cache = None
+def _mower_by_id():
+    """Lazy cache of the (small, static) mower registry keyed by _id."""
+    global _mower_cache
+    if _mower_cache is None:
+        try:
+            _mower_cache = {m["_id"]: m for m in get_db_client().db.mower_models.find({})}
+        except Exception:
+            _mower_cache = {}
+    return _mower_cache
+
+
+def _build_grounding(yards, plans):
+    """Summarize what the agent retrieved from MongoDB into a provenance object the UI
+    can show as 'Grounded in N similar installations'. Makes MongoDB visibly the agent's
+    reasoning memory, not just storage. Dedupes by _id; defensive against odd shapes."""
+    uy = {y.get("_id"): y for y in yards if isinstance(y, dict) and y.get("_id")}
+    up = {p.get("_id"): p for p in plans if isinstance(p, dict) and p.get("_id")}
+    if not uy and not up:
+        return None
+    slopes = [y["slope_pct"] for y in uy.values() if isinstance(y.get("slope_pct"), (int, float))]
+    boundary_techs = {}
+    for p in up.values():
+        mid = p.get("mower_id")
+        bt = (_mower_by_id().get(mid) or {}).get("boundary_tech")
+        if bt:
+            boundary_techs[bt] = boundary_techs.get(bt, 0) + 1
+    terrains = sorted({y.get("terrain") for y in uy.values() if y.get("terrain")})
+    out = {
+        "similar_yards": len(uy),
+        "historical_plans": len(up),
+    }
+    if slopes:
+        out["avg_slope_pct"] = round(sum(slopes) / len(slopes), 1)
+    if boundary_techs:
+        out["boundary_techs"] = boundary_techs
+    if terrains:
+        out["terrains"] = terrains
+    return out
+
+
 def _ground_mower(m):
     """Backfill a mower dict from the DB registry by id, so specs (year/charging/
     price_tier/…) are real and present even if the model only echoed a few fields.
@@ -353,6 +395,10 @@ def get_recommendation(yard: YardInput):
     5. Returns structured recommendation and trace ID to the client.
     """
     try:
+        # Provenance: what the agent retrieves from MongoDB during reasoning.
+        grounding_yards = []
+        grounding_plans = []
+
         # Geo-enrichment: if a map polygon was drawn, derive real slope + soil from
         # its coordinates and let them override / inform the recommendation.
         site_conditions = None
@@ -459,6 +505,12 @@ def get_recommendation(yard: YardInput):
                 args = dict(fc.args)
                 print(f"Gemini requested tool call: {fc.name} with arguments {args}")
                 tool_output = _execute_tool(fc.name, args)
+                # Capture what the agent actually retrieved from MongoDB so we can show
+                # grounded provenance ("based on N similar installs") in the response.
+                if fc.name == "find_similar_yards" and isinstance(tool_output, list):
+                    grounding_yards.extend(tool_output)
+                elif fc.name == "find_plans" and isinstance(tool_output, list):
+                    grounding_plans.extend(tool_output)
                 tool_responses.append(
                     vertexai.generative_models.Part.from_function_response(
                         name=fc.name, response={"result": tool_output}
@@ -502,6 +554,9 @@ def get_recommendation(yard: YardInput):
         # the strict response_model always validates and the card shows real specs.
         parsed_data = _normalize_recommendation(parsed_data)
 
+        grounding = _build_grounding(grounding_yards, grounding_plans)
+        if grounding:
+            parsed_data["grounding"] = grounding
         if site_conditions:
             parsed_data["site_conditions"] = site_conditions
         return parsed_data

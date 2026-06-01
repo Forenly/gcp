@@ -257,6 +257,33 @@ def test_normalize_recommendation_maps_and_grounds(monkeypatch):
     assert out["trace_id"] == "plan-abc"
 
 
+def test_build_grounding_summarizes_and_dedupes(monkeypatch):
+    monkeypatch.setattr(server, "_mower_cache", {
+        "mammotion-luba2-5000": {"_id": "mammotion-luba2-5000", "boundary_tech": "virtual-rtk-gps"},
+        "stihl-imow-5": {"_id": "stihl-imow-5", "boundary_tech": "wire"},
+    })
+    yards = [
+        {"_id": "y1", "slope_pct": 4, "terrain": "flat-grass"},
+        {"_id": "y1", "slope_pct": 4, "terrain": "flat-grass"},   # dup → counted once
+        {"_id": "y2", "slope_pct": 22, "terrain": "gentle-slope"},
+    ]
+    plans = [
+        {"_id": "p1", "mower_id": "mammotion-luba2-5000"},
+        {"_id": "p2", "mower_id": "stihl-imow-5"},
+        {"_id": "p2", "mower_id": "stihl-imow-5"},               # dup
+    ]
+    g = server._build_grounding(yards, plans)
+    assert g["similar_yards"] == 2
+    assert g["historical_plans"] == 2
+    assert g["avg_slope_pct"] == 13.0  # (4+22)/2
+    assert g["boundary_techs"] == {"virtual-rtk-gps": 1, "wire": 1}
+    assert set(g["terrains"]) == {"flat-grass", "gentle-slope"}
+
+
+def test_build_grounding_empty_returns_none():
+    assert server._build_grounding([], []) is None
+
+
 def test_normalize_recommendation_handles_missing_db(monkeypatch):
     # If the id isn't in the registry, keep the model's own fields without raising.
     class DB:

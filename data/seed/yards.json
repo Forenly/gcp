@@ -3,45 +3,178 @@
     "_id": "yard-suburban-flat-small",
     "area_sqm": 320,
     "slope_pct": 4,
-    "obstacles": ["tree", "flowerbed"],
+    "obstacles": [
+      "tree",
+      "flowerbed"
+    ],
     "boundary_type": "fenced",
     "charging_access": "outlet-near",
     "terrain": "flat-grass"
   },
   {
-    "_id": "yard-steep-hilly-large",
-    "area_sqm": 3500,
-    "slope_pct": 65,
-    "obstacles": ["rocks", "steep-dropoff", "trees"],
-    "boundary_type": "open",
-    "charging_access": "shed-power",
-    "terrain": "rough-slope"
-  },
-  {
-    "_id": "yard-complex-garden-mid",
-    "area_sqm": 1200,
-    "slope_pct": 15,
-    "obstacles": ["pond", "multiple-flowerbeds", "patio", "playground"],
-    "boundary_type": "fenced",
-    "charging_access": "patio-outlet",
-    "terrain": "complex-obstacles"
-  },
-  {
     "_id": "yard-minimalist-narrow",
     "area_sqm": 150,
     "slope_pct": 2,
-    "obstacles": ["narrow-passage"],
+    "obstacles": [
+      "narrow-passage"
+    ],
     "boundary_type": "fenced",
     "charging_access": "garage-exterior",
     "terrain": "narrow-strips"
   },
   {
-    "_id": "yard-estate-massive",
-    "area_sqm": 6500,
-    "slope_pct": 10,
-    "obstacles": ["driveway", "trees", "lake"],
+    "_id": "yard-townhouse-courtyard",
+    "area_sqm": 220,
+    "slope_pct": 6,
+    "obstacles": [
+      "patio",
+      "raised-bed"
+    ],
+    "boundary_type": "walled",
+    "charging_access": "outlet-near",
+    "terrain": "flat-grass"
+  },
+  {
+    "_id": "yard-suburban-standard",
+    "area_sqm": 650,
+    "slope_pct": 8,
+    "obstacles": [
+      "tree",
+      "trampoline",
+      "flowerbed"
+    ],
+    "boundary_type": "fenced",
+    "charging_access": "patio-outlet",
+    "terrain": "flat-grass"
+  },
+  {
+    "_id": "yard-suburban-sloped",
+    "area_sqm": 900,
+    "slope_pct": 22,
+    "obstacles": [
+      "tree",
+      "retaining-wall"
+    ],
+    "boundary_type": "fenced",
+    "charging_access": "garage-exterior",
+    "terrain": "gentle-slope"
+  },
+  {
+    "_id": "yard-complex-garden-mid",
+    "area_sqm": 1200,
+    "slope_pct": 15,
+    "obstacles": [
+      "pond",
+      "multiple-flowerbeds",
+      "patio",
+      "playground"
+    ],
+    "boundary_type": "fenced",
+    "charging_access": "patio-outlet",
+    "terrain": "complex-obstacles"
+  },
+  {
+    "_id": "yard-family-large-flat",
+    "area_sqm": 1450,
+    "slope_pct": 7,
+    "obstacles": [
+      "swing-set",
+      "trees",
+      "vegetable-garden"
+    ],
+    "boundary_type": "fenced",
+    "charging_access": "shed-power",
+    "terrain": "flat-grass"
+  },
+  {
+    "_id": "yard-orchard-terraced",
+    "area_sqm": 1600,
+    "slope_pct": 35,
+    "obstacles": [
+      "fruit-trees",
+      "terraces",
+      "irrigation-lines"
+    ],
+    "boundary_type": "open",
+    "charging_access": "shed-power",
+    "terrain": "terraced-slope"
+  },
+  {
+    "_id": "yard-hillside-villa",
+    "area_sqm": 1800,
+    "slope_pct": 42,
+    "obstacles": [
+      "rock-garden",
+      "steps",
+      "trees"
+    ],
+    "boundary_type": "open",
+    "charging_access": "garage-exterior",
+    "terrain": "rough-slope"
+  },
+  {
+    "_id": "yard-steep-hilly-large",
+    "area_sqm": 3500,
+    "slope_pct": 65,
+    "obstacles": [
+      "rocks",
+      "steep-dropoff",
+      "trees"
+    ],
+    "boundary_type": "open",
+    "charging_access": "shed-power",
+    "terrain": "rough-slope"
+  },
+  {
+    "_id": "yard-school-grounds",
+    "area_sqm": 2600,
+    "slope_pct": 5,
+    "obstacles": [
+      "pathways",
+      "benches",
+      "flagpole"
+    ],
+    "boundary_type": "fenced",
+    "charging_access": "mains-power-anywhere",
+    "terrain": "flat-grass"
+  },
+  {
+    "_id": "yard-corporate-campus",
+    "area_sqm": 4200,
+    "slope_pct": 12,
+    "obstacles": [
+      "walkways",
+      "ornamental-beds",
+      "parking-edge"
+    ],
     "boundary_type": "open",
     "charging_access": "mains-power-anywhere",
     "terrain": "large-rolling-hills"
+  },
+  {
+    "_id": "yard-estate-massive",
+    "area_sqm": 6500,
+    "slope_pct": 10,
+    "obstacles": [
+      "driveway",
+      "trees",
+      "lake"
+    ],
+    "boundary_type": "open",
+    "charging_access": "mains-power-anywhere",
+    "terrain": "large-rolling-hills"
+  },
+  {
+    "_id": "yard-coastal-windy-mid",
+    "area_sqm": 1100,
+    "slope_pct": 18,
+    "obstacles": [
+      "sandy-patches",
+      "low-hedge",
+      "exposed-slope"
+    ],
+    "boundary_type": "hedged",
+    "charging_access": "patio-outlet",
+    "terrain": "gentle-slope"
   }
 ]

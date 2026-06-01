@@ -1,64 +1,1442 @@
 [
   {
-    "_id": "plan-001",
+    "_id": "plan-000",
     "yard_id": "yard-suburban-flat-small",
-    "mower_id": "segway-navimow-i105",
-    "created_at": "2026-05-28T10:00:00Z",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-02-01T08:00:00Z",
+    "outcome": "successful",
     "fit_reasons": [
-      "yard area is well within the mower max (320 < 500 sqm)",
-      "slope is very gentle (4% < 30% max slope)",
-      "virtual RTK-GPS boundary is perfect for this fenced suburban lawn with open sky access"
+      "yard area 320 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 4% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced flat-grass layout"
     ],
     "plan": {
-      "boundary_placement": "Virtual boundary mapped 15cm from the fence line using Navimow App. Set virtual exclusion zones around the flowerbed.",
-      "dock_location": "North-east corner of the lawn, near the outdoor GFCI outlet. Ensure clear view of the sky for GPS antenna.",
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around tree, flowerbed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
       "first_mow_zones": [
-        {"zone": "main lawn", "priority": 1},
-        {"zone": "front lawn strip", "priority": 2}
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
       ],
-      "schedule": "Mon-Wed-Fri 08:00–10:00"
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-001",
+    "yard_id": "yard-suburban-flat-small",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-05-04T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 320 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 4% is within the 35% climbing limit",
+      "wire boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the fenced edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around tree, flowerbed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
     }
   },
   {
     "_id": "plan-002",
-    "yard_id": "yard-steep-hilly-large",
+    "yard_id": "yard-suburban-flat-small",
     "mower_id": "mammotion-luba2-5000",
-    "created_at": "2026-05-28T14:30:00Z",
+    "created_at": "2026-03-07T10:00:00Z",
+    "outcome": "successful",
     "fit_reasons": [
-      "yard area is within mower capacity (3500 < 5000 sqm)",
-      "extremely steep slopes (65%) require Luba 2 AWD's industry leading 80% climbing ability",
-      "multi-zone GPS navigation allows wire-free setup across large, rough open terrain"
+      "yard area 320 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 4% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced flat-grass layout"
     ],
     "plan": {
-      "boundary_placement": "RTK-GPS virtual boundary. Reference station mounted on roof of shed for optimal line-of-sight. Program exclusion zones for the rock piles and steep dropoffs.",
-      "dock_location": "Beside the garden shed. Plugged into the 230V outlet inside the shed via weatherproof cable path.",
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around tree, flowerbed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
       "first_mow_zones": [
-        {"zone": "lower pasture", "priority": 1},
-        {"zone": "steep embankment", "priority": 2},
-        {"zone": "orchard slope", "priority": 3}
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
       ],
-      "schedule": "Daily 10:00–14:00 (to maximize dry grass and solar charge conditions)"
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
     }
   },
   {
     "_id": "plan-003",
-    "yard_id": "yard-complex-garden-mid",
-    "mower_id": "ecovacs-goat-g1",
-    "created_at": "2026-05-29T09:00:00Z",
+    "yard_id": "yard-suburban-flat-small",
+    "mower_id": "segway-navimow-i105",
+    "created_at": "2026-01-10T11:00:00Z",
+    "outcome": "successful",
     "fit_reasons": [
-      "yard area is within the mower max (1200 < 1600 sqm)",
-      "complex obstacles like pond and patio are handled expertly by Goat G1's 3D LiDAR and visual obstacle avoidance",
-      "virtual beacon technology is ideal for garden layouts that block standard GPS signals"
+      "yard area 320 m\u00b2 is within the mower max (500 m\u00b2)",
+      "slope 4% is within the 30% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced flat-grass layout"
     ],
     "plan": {
-      "boundary_placement": "Place 3 EcoVacs navigation beacons at perimeter corners for triangulation. Map virtual boundaries around the pond, playground, and patio area.",
-      "dock_location": "Patio edge, on flat concrete slab, near patio power outlet.",
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around tree, flowerbed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
       "first_mow_zones": [
-        {"zone": "main garden area", "priority": 1},
-        {"zone": "playground surround", "priority": 2},
-        {"zone": "patio grass strip", "priority": 3}
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
       ],
-      "schedule": "Tue-Thu-Sat 09:00–12:00"
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-010",
+    "yard_id": "yard-minimalist-narrow",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-04-13T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 150 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 2% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced narrow-strips layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around narrow-passage.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-011",
+    "yard_id": "yard-minimalist-narrow",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-02-16T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 150 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 2% is within the 35% climbing limit",
+      "wire boundary suits a fenced narrow-strips layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the fenced edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around narrow-passage.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-012",
+    "yard_id": "yard-minimalist-narrow",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-05-19T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 150 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 2% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced narrow-strips layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around narrow-passage.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-013",
+    "yard_id": "yard-minimalist-narrow",
+    "mower_id": "segway-navimow-i105",
+    "created_at": "2026-03-22T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 150 m\u00b2 is within the mower max (500 m\u00b2)",
+      "slope 2% is within the 30% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced narrow-strips layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around narrow-passage.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-020",
+    "yard_id": "yard-townhouse-courtyard",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-01-25T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 220 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 6% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a walled flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around patio, raised-bed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-021",
+    "yard_id": "yard-townhouse-courtyard",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-04-28T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 220 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 6% is within the 35% climbing limit",
+      "wire boundary suits a walled flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the walled edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around patio, raised-bed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-022",
+    "yard_id": "yard-townhouse-courtyard",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-02-03T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 220 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 6% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a walled flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around patio, raised-bed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-023",
+    "yard_id": "yard-townhouse-courtyard",
+    "mower_id": "segway-navimow-i105",
+    "created_at": "2026-05-06T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 220 m\u00b2 is within the mower max (500 m\u00b2)",
+      "slope 6% is within the 30% climbing limit",
+      "virtual-rtk-gps boundary suits a walled flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around patio, raised-bed.",
+      "dock_location": "Near the outdoor GFCI outlet on the house wall, on level ground with sky view.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-030",
+    "yard_id": "yard-suburban-standard",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-03-09T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 650 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 8% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around tree, trampoline, flowerbed.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-031",
+    "yard_id": "yard-suburban-standard",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-01-12T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 650 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 8% is within the 35% climbing limit",
+      "wire boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the fenced edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around tree, trampoline, flowerbed.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-032",
+    "yard_id": "yard-suburban-standard",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-04-15T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 650 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 8% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around tree, trampoline, flowerbed.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-033",
+    "yard_id": "yard-suburban-standard",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-02-18T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 650 m\u00b2 is within the mower max (1600 m\u00b2)",
+      "slope 8% is within the 45% climbing limit",
+      "virtual-beacon boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Position navigation beacons at perimeter corners for triangulation where GPS is shaded; map virtual no-go zones around tree, trampoline, flowerbed.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "front strip",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-040",
+    "yard_id": "yard-suburban-sloped",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-05-21T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 900 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 22% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around tree, retaining-wall.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-041",
+    "yard_id": "yard-suburban-sloped",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-03-24T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 900 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 22% is within the 35% climbing limit",
+      "wire boundary suits a fenced gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the fenced edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around tree, retaining-wall.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-042",
+    "yard_id": "yard-suburban-sloped",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-01-27T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 900 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 22% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around tree, retaining-wall.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-043",
+    "yard_id": "yard-suburban-sloped",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-04-02T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 900 m\u00b2 is within the mower max (1600 m\u00b2)",
+      "slope 22% is within the 45% climbing limit",
+      "virtual-beacon boundary suits a fenced gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Position navigation beacons at perimeter corners for triangulation where GPS is shaded; map virtual no-go zones around tree, retaining-wall.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-050",
+    "yard_id": "yard-complex-garden-mid",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-02-05T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1200 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 15% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced complex-obstacles layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around pond, multiple-flowerbeds, patio.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-051",
+    "yard_id": "yard-complex-garden-mid",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-05-08T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1200 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 15% is within the 35% climbing limit",
+      "wire boundary suits a fenced complex-obstacles layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the fenced edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around pond, multiple-flowerbeds, patio.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-052",
+    "yard_id": "yard-complex-garden-mid",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-03-11T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1200 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 15% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced complex-obstacles layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around pond, multiple-flowerbeds, patio.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-053",
+    "yard_id": "yard-complex-garden-mid",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-01-14T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1200 m\u00b2 is within the mower max (1600 m\u00b2)",
+      "slope 15% is within the 45% climbing limit",
+      "virtual-beacon boundary suits a fenced complex-obstacles layout"
+    ],
+    "plan": {
+      "boundary_placement": "Position navigation beacons at perimeter corners for triangulation where GPS is shaded; map virtual no-go zones around pond, multiple-flowerbeds, patio.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-060",
+    "yard_id": "yard-family-large-flat",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-04-17T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1450 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 7% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around swing-set, trees, vegetable-garden.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-061",
+    "yard_id": "yard-family-large-flat",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-02-20T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1450 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 7% is within the 35% climbing limit",
+      "wire boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the fenced edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around swing-set, trees, vegetable-garden.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-062",
+    "yard_id": "yard-family-large-flat",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-05-23T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1450 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 7% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around swing-set, trees, vegetable-garden.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-063",
+    "yard_id": "yard-family-large-flat",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-03-26T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1450 m\u00b2 is within the mower max (1600 m\u00b2)",
+      "slope 7% is within the 45% climbing limit",
+      "virtual-beacon boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Position navigation beacons at perimeter corners for triangulation where GPS is shaded; map virtual no-go zones around swing-set, trees, vegetable-garden.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "play-area surround",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-070",
+    "yard_id": "yard-orchard-terraced",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-01-01T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1600 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 35% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a open terraced-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around fruit-trees, terraces, irrigation-lines.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-071",
+    "yard_id": "yard-orchard-terraced",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-04-04T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1600 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 35% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open terraced-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around fruit-trees, terraces, irrigation-lines.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-072",
+    "yard_id": "yard-orchard-terraced",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-02-07T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1600 m\u00b2 is within the mower max (1600 m\u00b2)",
+      "slope 35% is within the 45% climbing limit",
+      "virtual-beacon boundary suits a open terraced-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Position navigation beacons at perimeter corners for triangulation where GPS is shaded; map virtual no-go zones around fruit-trees, terraces, irrigation-lines.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-073",
+    "yard_id": "yard-orchard-terraced",
+    "mower_id": "roboup-t1000-pro",
+    "created_at": "2026-05-10T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1600 m\u00b2 is within the mower max (1800 m\u00b2)",
+      "slope 35% is within the 45% climbing limit",
+      "virtual-vslam-rtk boundary suits a open terraced-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Teach the perimeter with a vSLAM mapping run, reinforced by RTK on open stretches; flag fruit-trees, terraces, irrigation-lines as visual exclusion zones.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-080",
+    "yard_id": "yard-hillside-villa",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-03-13T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1800 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 42% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a open rough-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around rock-garden, steps, trees.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-081",
+    "yard_id": "yard-hillside-villa",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-01-16T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1800 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 42% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open rough-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around rock-garden, steps, trees.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-082",
+    "yard_id": "yard-hillside-villa",
+    "mower_id": "roboup-t1000-pro",
+    "created_at": "2026-04-19T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1800 m\u00b2 is within the mower max (1800 m\u00b2)",
+      "slope 42% is within the 45% climbing limit",
+      "virtual-vslam-rtk boundary suits a open rough-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Teach the perimeter with a vSLAM mapping run, reinforced by RTK on open stretches; flag rock-garden, steps, trees as visual exclusion zones.",
+      "dock_location": "On the garage-exterior wall beside the weatherproof outlet, with a gentle approach ramp.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-090",
+    "yard_id": "yard-steep-hilly-large",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-02-22T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 3500 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 65% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open rough-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around rocks, steep-dropoff, trees.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        },
+        {
+          "zone": "far field",
+          "priority": 3
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-091",
+    "yard_id": "yard-steep-hilly-large",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-05-25T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 3500 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 65% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open rough-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around rocks, steep-dropoff, trees.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        },
+        {
+          "zone": "far field",
+          "priority": 3
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-092",
+    "yard_id": "yard-steep-hilly-large",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-03-28T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 3500 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 65% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open rough-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around rocks, steep-dropoff, trees.",
+      "dock_location": "Beside the garden shed, powered from the shed's 230V outlet via a weatherproof cable path.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        },
+        {
+          "zone": "far field",
+          "priority": 3
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-100",
+    "yard_id": "yard-school-grounds",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-01-03T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 2600 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 5% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around pathways, benches, flagpole.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Thu 14:00\u201317:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-101",
+    "yard_id": "yard-school-grounds",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-04-06T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 2600 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 5% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around pathways, benches, flagpole.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-102",
+    "yard_id": "yard-school-grounds",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-02-09T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 2600 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 5% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a fenced flat-grass layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around pathways, benches, flagpole.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-110",
+    "yard_id": "yard-corporate-campus",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-05-12T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 4200 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 12% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a open large-rolling-hills layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around walkways, ornamental-beds, parking-edge.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 10:00\u201314:00 (dry-grass + solar window)",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-111",
+    "yard_id": "yard-corporate-campus",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-03-15T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 4200 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 12% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open large-rolling-hills layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around walkways, ornamental-beds, parking-edge.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-112",
+    "yard_id": "yard-corporate-campus",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-01-18T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 4200 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 12% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a open large-rolling-hills layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around walkways, ornamental-beds, parking-edge.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-120",
+    "yard_id": "yard-estate-massive",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-04-21T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 6500 m\u00b2 exceeds single-unit max (5000 m\u00b2) \u2192 2 units / zone-split",
+      "slope 10% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a open large-rolling-hills layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around driveway, trees, lake.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Wed-Sat-Sun 06:30\u201309:30",
+      "units": 2
+    }
+  },
+  {
+    "_id": "plan-121",
+    "yard_id": "yard-estate-massive",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-02-24T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 6500 m\u00b2 exceeds single-unit max (5000 m\u00b2) \u2192 2 units / zone-split",
+      "slope 10% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a open large-rolling-hills layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around driveway, trees, lake.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 2
+    }
+  },
+  {
+    "_id": "plan-122",
+    "yard_id": "yard-estate-massive",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-05-27T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 6500 m\u00b2 exceeds single-unit max (5000 m\u00b2) \u2192 2 units / zone-split",
+      "slope 10% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a open large-rolling-hills layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around driveway, trees, lake.",
+      "dock_location": "Central service point with mains access, chosen for shortest average travel to all zones.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "far field",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 2
+    }
+  },
+  {
+    "_id": "plan-130",
+    "yard_id": "yard-coastal-windy-mid",
+    "mower_id": "husqvarna-automower-450x",
+    "created_at": "2026-03-02T08:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1100 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 18% is within the 50% climbing limit",
+      "wire-or-virtual-epos boundary suits a hedged gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Deploy EPOS satellite-free virtual boundary; fall back to boundary wire on tree-shaded edges. Exclusion zones around sandy-patches, low-hedge, exposed-slope.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri-Sun 16:00\u201319:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-131",
+    "yard_id": "yard-coastal-windy-mid",
+    "mower_id": "worx-landroid-l1500",
+    "created_at": "2026-01-05T09:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1100 m\u00b2 is within the mower max (1500 m\u00b2)",
+      "slope 18% is within the 35% climbing limit",
+      "wire boundary suits a hedged gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Lay perimeter boundary wire ~12cm inside the hedged edge, stake every 0.8m, and route the guide wire back to the dock. Loop exclusion islands around sandy-patches, low-hedge, exposed-slope.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Mon-Wed-Fri 08:00\u201310:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-132",
+    "yard_id": "yard-coastal-windy-mid",
+    "mower_id": "mammotion-luba2-5000",
+    "created_at": "2026-04-08T10:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1100 m\u00b2 is within the mower max (5000 m\u00b2)",
+      "slope 18% is within the 80% climbing limit",
+      "virtual-rtk-gps boundary suits a hedged gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Map a virtual RTK-GPS boundary along the full perimeter; mount the reference antenna with clear sky view. Define virtual exclusion zones around sandy-patches, low-hedge, exposed-slope.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Tue-Thu-Sat 09:00\u201312:00",
+      "units": 1
+    }
+  },
+  {
+    "_id": "plan-133",
+    "yard_id": "yard-coastal-windy-mid",
+    "mower_id": "ecovacs-goat-g1",
+    "created_at": "2026-02-11T11:00:00Z",
+    "outcome": "successful",
+    "fit_reasons": [
+      "yard area 1100 m\u00b2 is within the mower max (1600 m\u00b2)",
+      "slope 18% is within the 45% climbing limit",
+      "virtual-beacon boundary suits a hedged gentle-slope layout"
+    ],
+    "plan": {
+      "boundary_placement": "Position navigation beacons at perimeter corners for triangulation where GPS is shaded; map virtual no-go zones around sandy-patches, low-hedge, exposed-slope.",
+      "dock_location": "Patio edge on a flat slab, plugged into the patio outlet, sheltered from direct runoff.",
+      "first_mow_zones": [
+        {
+          "zone": "main lawn",
+          "priority": 1
+        },
+        {
+          "zone": "slope / embankment",
+          "priority": 2
+        }
+      ],
+      "schedule": "Daily 07:00\u201309:00",
+      "units": 1
     }
   }
 ]

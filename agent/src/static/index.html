@@ -80,6 +80,10 @@
   .site{background:#fff8ec;border:1px solid #f0dcb6;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px}
   .site b{color:var(--amber)}
   .site .pill{display:inline-block;background:#fff;border:1px solid #f0dcb6;border-radius:999px;padding:2px 9px;margin:3px 5px 0 0;font-size:12px}
+  /* MongoDB grounding panel */
+  .ground{background:#eef4ff;border:1px solid #cdddf7;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px}
+  .ground-h{color:#1f4fa3;font-weight:600;margin-bottom:2px}
+  .ground .pill{display:inline-block;background:#fff;border:1px solid #cdddf7;border-radius:999px;padding:2px 9px;margin:6px 5px 0 0;font-size:12px;color:#1f4fa3}
   /* progress stepper */
   .prog{padding:4px 2px}
   .prog-h{font-weight:600;color:var(--green-d);margin-bottom:12px;display:flex;align-items:center}
@@ -109,8 +113,8 @@
       <span class="badge">MongoDB MCP</span>
       <span class="badge"><span class="live-dot"></span>Live on Cloud Run</span>
     </div>
-    <h1>Autonomous Lawn-Mower<br>Deployment Advisor</h1>
-    <p class="lede">Describe a yard — size, slope, obstacles, boundaries, charging access — and a Gemini agent reasons over a live mower registry to recommend the right robotic mower and generate a complete installation plan.</p>
+    <h1>Deployment Advisor for<br>Autonomous Outdoor Robots</h1>
+    <p class="lede">Starting with robotic mowers, the agent analyzes terrain, slope, soil, boundaries and <b>historical deployments in MongoDB</b> to generate a grounded installation plan — not just a product pick. The same workflow generalizes to any outdoor robot fleet.</p>
     <div class="cta-row">
       <button class="btn btn-primary" onclick="document.getElementById('try').scrollIntoView({behavior:'smooth'})">Try the advisor →</button>
       <a class="btn btn-ghost" href="https://github.com/Forenly/gcp" target="_blank">View on GitHub</a>
@@ -254,7 +258,18 @@ async function recommend(){
       if(sc.soil&&sc.soil.clay_pct!=null) pills.push(`<span class="pill">clay ${sc.soil.clay_pct}% · sand ${sc.soil.sand_pct}%</span>`);
       if(pills.length) siteHtml=`<div class="site"><b>Read from your map location:</b><br>${pills.join('')}</div>`;
     }
-    res.innerHTML=siteHtml+`
+    let groundHtml='';
+    const g=d.grounding;
+    if(g && (g.similar_yards || g.historical_plans)){
+      const bits=[];
+      if(g.similar_yards) bits.push(`<b>${g.similar_yards}</b> similar yard archetype${g.similar_yards>1?'s':''}`);
+      if(g.historical_plans) bits.push(`<b>${g.historical_plans}</b> historical deployment${g.historical_plans>1?'s':''}`);
+      if(g.avg_slope_pct!=null) bits.push(`avg slope <b>${g.avg_slope_pct}%</b>`);
+      let bt='';
+      if(g.boundary_techs){ bt=Object.entries(g.boundary_techs).map(([k,v])=>`<span class="pill">${esc(k)} ×${v}</span>`).join(''); }
+      groundHtml=`<div class="ground"><div class="ground-h">⛁ Grounded in MongoDB — agent consulted ${bits.join(' · ')} before recommending.</div>${bt}</div>`;
+    }
+    res.innerHTML=siteHtml+groundHtml+`
       <div class="rec">
         <div class="pick">Recommended</div>
         <div class="name">${esc(m.brand||'')} ${esc(m.model||'')}</div>
