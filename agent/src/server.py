@@ -185,7 +185,8 @@ def landing():
     if index.exists():
         html = index.read_text(encoding="utf-8")
         html = html.replace("__MAPS_BROWSER_KEY__", os.getenv("MAPS_BROWSER_KEY", ""))
-        return HTMLResponse(html)
+        # Always revalidate so a new deploy is picked up without a manual hard refresh.
+        return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
     return HTMLResponse("<h1>Lawn Advisor</h1><p>See <a href='/api/status'>/api/status</a>.</p>")
 
 
