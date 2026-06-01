@@ -284,6 +284,29 @@ def test_build_grounding_empty_returns_none():
     assert server._build_grounding([], []) is None
 
 
+class _Yard:
+    def __init__(self, area, obstacles):
+        self.area_sqm = area
+        self.obstacles = obstacles
+
+
+def test_build_rollout_phases_and_boundary_aware():
+    mower = {"boundary_tech": "virtual-rtk-gps", "max_yard_area_sqm": 5000}
+    r = server._build_rollout(mower, _Yard(800, ["pond", "tree"]), {"dock_location": "patio", "schedule": "Mon-Fri"})
+    assert [s["day"] for s in r] == [1, 2, 3, 4]
+    assert "RTK" in r[0]["detail"]
+    assert "pond" in r[0]["detail"]              # obstacle exclusion noted
+    assert r[1]["detail"] == "patio"             # dock from plan
+    assert "Mon-Fri" in r[3]["detail"]           # schedule in final phase
+
+
+def test_build_rollout_multi_unit_note():
+    mower = {"boundary_tech": "wire", "max_yard_area_sqm": 1500}
+    r = server._build_rollout(mower, _Yard(4000, []), {})
+    assert "wire" in r[0]["detail"].lower()
+    assert "3 units" in r[2]["detail"]           # ceil(4000/1500)=3
+
+
 def test_normalize_recommendation_handles_missing_db(monkeypatch):
     # If the id isn't in the registry, keep the model's own fields without raising.
     class DB:

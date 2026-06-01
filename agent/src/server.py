@@ -9,6 +9,7 @@ import os
 import sys
 import json
 import time
+import math
 from pathlib import Path
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
@@ -105,6 +106,7 @@ class RecommendationResponse(BaseModel):
     trace_id: str = ""
     site_conditions: Optional[dict] = Field(default=None, description="Slope and soil derived from the map polygon, if one was provided")
     grounding: Optional[dict] = Field(default=None, description="What the agent retrieved from MongoDB (similar yards + historical plans) to ground the recommendation")
+    rollout: Optional[List[dict]] = Field(default=None, description="Deterministic 4-phase install rollout (Day 1-4) derived from the recommendation")
 
 
 # Define Function Declarations for Gemini Tools
@@ -298,6 +300,45 @@ def _mower_by_id():
         except Exception:
             _mower_cache = {}
     return _mower_cache
+
+
+def _build_rollout(mower, yard, plan):
+    """Deterministic 4-phase install rollout — turns a recommendation into a deployment
+    plan (the 'system, not engine' story). Steps reflect the real install sequence and
+    adapt to the mower's boundary tech, yard obstacles and multi-unit needs."""
+    if not isinstance(mower, dict):
+        return None
+    bt = (mower.get("boundary_tech") or "").lower()
+    if "wire" in bt and "virtual" not in bt and "epos" not in bt:
+        day1 = "Lay and peg the perimeter boundary wire; route the guide wire back to the dock."
+    elif "rtk" in bt:
+        day1 = "Map the virtual RTK-GPS boundary and place the reference antenna with clear sky view."
+    elif "beacon" in bt:
+        day1 = "Position navigation beacons at perimeter corners and map the virtual boundary."
+    elif "vslam" in bt:
+        day1 = "Run a vSLAM perimeter teach pass; reinforce with RTK on open stretches."
+    else:
+        day1 = "Define the satellite-free EPOS virtual boundary (wire fallback on shaded edges)."
+
+    obstacles = yard.obstacles if hasattr(yard, "obstacles") else []
+    obs_txt = (" Add exclusion zones around " + ", ".join(obstacles[:3]) + ".") if obstacles else ""
+    schedule = (plan or {}).get("schedule") or "your weekly schedule"
+
+    try:
+        units = max(1, math.ceil(float(yard.area_sqm) / float(mower.get("max_yard_area_sqm") or yard.area_sqm)))
+    except Exception:
+        units = 1
+    unit_note = f" Deploy {units} units / split the area into {units} zones." if units > 1 else ""
+
+    return [
+        {"day": 1, "icon": "📍", "title": "Boundary mapping", "detail": day1 + obs_txt},
+        {"day": 2, "icon": "⚙️", "title": "Dock & power", "detail": (plan or {}).get("dock_location")
+            or "Install the charging dock at the chosen power access point and seat the mower."},
+        {"day": 3, "icon": "🧪", "title": "Calibration run", "detail":
+            "Supervise the first mow; tune exclusion zones and cutting height." + unit_note},
+        {"day": 4, "icon": "🤖", "title": "Autonomous operation", "detail":
+            f"Enable the full autonomous schedule ({schedule}) and monitor the first week."},
+    ]
 
 
 def _build_grounding(yards, plans):
@@ -571,6 +612,11 @@ def get_recommendation(yard: YardInput):
         grounding = _build_grounding(grounding_yards, grounding_plans)
         if grounding:
             parsed_data["grounding"] = grounding
+
+        rollout = _build_rollout(parsed_data.get("recommended_mower") or {}, yard, parsed_data.get("deployment_plan") or {})
+        if rollout:
+            parsed_data["rollout"] = rollout
+
         if site_conditions:
             parsed_data["site_conditions"] = site_conditions
         return parsed_data
