@@ -20,8 +20,35 @@ import requests
 MAPS_SERVER_KEY = os.getenv("MAPS_SERVER_KEY", "")
 
 ELEV_URL = "https://maps.googleapis.com/maps/api/elevation/json"
+GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 SOIL_CLASS_URL = "https://rest.isric.org/soilgrids/v2.0/classification/query"
 SOIL_PROP_URL = "https://rest.isric.org/soilgrids/v2.0/properties/query"
+
+
+def geocode(address):
+    """Resolve an address string to a lat/lng + formatted name via Google Geocoding.
+
+    Done server-side with the (referrer-unrestricted) server key: the browser key
+    is referrer-locked and Google rejects referrer keys on the Geocoding web service.
+    Returns {"lat","lng","formatted_address"} or None.
+    """
+    address = (address or "").strip()
+    if not address or not MAPS_SERVER_KEY:
+        return None
+    try:
+        r = requests.get(GEOCODE_URL, params={"address": address, "key": MAPS_SERVER_KEY}, timeout=12)
+        data = r.json()
+        if data.get("status") != "OK" or not data.get("results"):
+            return None
+        top = data["results"][0]
+        loc = top["geometry"]["location"]
+        return {
+            "lat": loc["lat"],
+            "lng": loc["lng"],
+            "formatted_address": top.get("formatted_address", address),
+        }
+    except Exception:
+        return None
 
 
 def _haversine(a, b):

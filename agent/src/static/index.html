@@ -260,10 +260,11 @@ async function recommend(){
   }finally{ btn.disabled=false; btn.textContent='Recommend a mower'; }
 }
 
-/* ---- Google Maps: geocode address + click-to-draw lawn → area, feed polygon to the agent ----
-   Uses core Maps + Geocoder + manual polygon drawing (no deprecated Drawing library,
-   no legacy Places Autocomplete — both unavailable to new API customers). */
-let map, geocoder, poly=null, drawing=false;
+/* ---- Google Maps: geocode address (via our backend) + click-to-draw lawn → area ----
+   Address search is proxied through /api/geocode (server key) because the browser key is
+   referrer-locked and Google rejects referrer keys on the Geocoding web service.
+   Manual polygon drawing avoids the deprecated Drawing library and legacy Places Autocomplete. */
+let map, poly=null, drawing=false;
 window.lawnPolygon=null;
 
 function initMap(){
@@ -272,17 +273,20 @@ function initMap(){
     streetViewControl:false, fullscreenControl:false, mapTypeControl:true,
     disableDoubleClickZoom:true
   });
-  geocoder=new google.maps.Geocoder();
   $('addr').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); geoSearch(); }});
   map.addListener('click',e=>{ if(drawing) poly.getPath().push(e.latLng); });
   map.addListener('dblclick',e=>{ if(drawing) finishDraw(); });
 }
-function geoSearch(){
-  const q=$('addr').value.trim(); if(!q||!geocoder) return;
-  geocoder.geocode({address:q},(res,status)=>{
-    if(status==='OK'&&res&&res[0]){ map.setCenter(res[0].geometry.location); map.setZoom(20); }
-    else $('mapinfo').textContent='Address not found — try a more specific search.';
-  });
+async function geoSearch(){
+  const q=$('addr').value.trim(); if(!q||!map) return;
+  $('mapinfo').textContent='Searching…';
+  try{
+    const r=await fetch('/api/geocode?q='+encodeURIComponent(q));
+    if(!r.ok) throw new Error('not found');
+    const d=await r.json();
+    map.setCenter({lat:d.lat,lng:d.lng}); map.setZoom(20);
+    $('mapinfo').textContent='Found '+(d.formatted_address||q)+' — click "Draw lawn", then click each corner.';
+  }catch(e){ $('mapinfo').textContent='Address not found — try a more specific search.'; }
 }
 function startDraw(){
   if(!window.google) return;

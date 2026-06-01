@@ -218,6 +218,19 @@ def status_endpoint():
     return _status()
 
 
+@app.get("/api/geocode")
+def geocode_endpoint(q: str):
+    """Proxy Google Geocoding via the server key (browser key is referrer-locked and
+    rejected by the Geocoding web service). Returns {lat, lng, formatted_address}."""
+    q = (q or "").strip()
+    if not q:
+        raise HTTPException(status_code=400, detail="Missing query parameter 'q'.")
+    result = geo.geocode(q)
+    if not result:
+        raise HTTPException(status_code=404, detail="Address not found.")
+    return result
+
+
 @app.get("/api/mowers")
 def list_mowers():
     """Return the mower registry for the landing page to render."""
