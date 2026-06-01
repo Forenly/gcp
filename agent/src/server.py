@@ -306,55 +306,41 @@ def get_recommendation(yard: YardInput):
         # Tool handling loop
         max_iterations = 6
         loop_count = 0
-        
-        while response.candidates[0].content.parts[0].function_call and loop_count < max_iterations:
-            loop_count += 1
-            func_call = response.candidates[0].content.parts[0].function_call
-            func_name = func_call.name
-            args = dict(func_call.args)
-            
-            print(f"Gemini requested tool call: {func_name} with arguments {args}")
-            
-            # Execute python counterpart
-            tool_output = None
+
+        def _execute_tool(func_name, args):
             if func_name == "find_mowers":
-                tool_output = tool_find_mowers(
-                    max_area=args.get("max_area"),
-                    max_slope=args.get("max_slope"),
-                    boundary_tech=args.get("boundary_tech")
-                )
+                return tool_find_mowers(max_area=args.get("max_area"), max_slope=args.get("max_slope"), boundary_tech=args.get("boundary_tech"))
             elif func_name == "find_similar_yards":
-                tool_output = tool_find_similar_yards(
-                    area=args.get("area"),
-                    slope=args.get("slope"),
-                    terrain=args.get("terrain")
-                )
+                return tool_find_similar_yards(area=args.get("area"), slope=args.get("slope"), terrain=args.get("terrain"))
             elif func_name == "find_plans":
-                tool_output = tool_find_plans(
-                    yard_ids=args.get("yard_ids"),
-                    mower_ids=args.get("mower_ids")
-                )
+                return tool_find_plans(yard_ids=args.get("yard_ids"), mower_ids=args.get("mower_ids"))
             elif func_name == "insert_plan":
-                plan_id = tool_insert_plan(
-                    yard_id=args.get("yard_id"),
-                    mower_id=args.get("mower_id"),
-                    fit_reasons=args.get("fit_reasons"),
-                    plan_details=args.get("plan_details")
+                plan_id = tool_insert_plan(yard_id=args.get("yard_id"), mower_id=args.get("mower_id"), fit_reasons=args.get("fit_reasons"), plan_details=args.get("plan_details"))
+                return {"plan_id": plan_id, "status": "success"}
+            print(f"Unknown tool called: {func_name}")
+            return {"error": f"Tool '{func_name}' not recognized."}
+
+        while loop_count < max_iterations:
+            # Gemini 2.x may emit several function calls in one turn (parallel calling).
+            # Execute ALL of them and return one function-response per call — the counts must match.
+            calls = [p.function_call for p in response.candidates[0].content.parts
+                     if p.function_call and p.function_call.name]
+            if not calls:
+                break
+            loop_count += 1
+            tool_responses = []
+            for fc in calls:
+                args = dict(fc.args)
+                print(f"Gemini requested tool call: {fc.name} with arguments {args}")
+                tool_output = _execute_tool(fc.name, args)
+                tool_responses.append(
+                    vertexai.generative_models.Part.from_function_response(
+                        name=fc.name, response={"result": tool_output}
+                    )
                 )
-                tool_output = {"plan_id": plan_id, "status": "success"}
-            else:
-                print(f"Unknown tool called: {func_name}")
-                tool_output = {"error": f"Tool '{func_name}' not recognized."}
-                
-            # Feed the output back into the chat session
-            print(f"Sending tool output back to Gemini: {tool_output}")
-            response = chat.send_message(
-                vertexai.generative_models.Part.from_function_response(
-                    name=func_name,
-                    response={"result": tool_output}
-                )
-            )
-            
+            # Send every tool response back in a single turn.
+            response = chat.send_message(tool_responses)
+
         # The tool loop finished, now parse Gemini's final verbal response.
         # We need a clean JSON out of Gemini. Let's ask it to format its final response if needed, 
         # or parse the text if it returned a JSON block.
