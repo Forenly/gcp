@@ -27,6 +27,7 @@ from mcp_client import (
     tool_find_plans,
     tool_insert_plan
 )
+import geo
 
 # Load environment
 GCP_PROJECT = os.getenv("GCP_PROJECT", "project-8925a333-2bd2-47ba-af2")
@@ -64,6 +65,7 @@ class YardInput(BaseModel):
     boundary_type: str = Field(default="fenced", description="Type of boundary, e.g., 'fenced', 'open', 'hedged'", example="fenced")
     charging_access: str = Field(default="outlet-near", description="Proximity to power, e.g., 'outlet-near', 'shed-power', 'garage'", example="patio-outlet")
     terrain: str = Field(default="flat-grass", description="General terrain descriptor", example="complex-obstacles")
+    polygon: Optional[List[List[float]]] = Field(default=None, description="Optional yard boundary drawn on a map, as [[lat, lng], ...]. When present, slope and soil are derived from these real-world coordinates.")
 
 class RecommendedMower(BaseModel):
     id: str = Field(..., alias="_id")
@@ -89,6 +91,7 @@ class RecommendationResponse(BaseModel):
     alternatives: List[RecommendedMower] = []
     deployment_plan: DeploymentPlanDetails
     trace_id: str = Field(..., description="The ID of the generated deployment plan inserted in MongoDB")
+    site_conditions: Optional[dict] = Field(default=None, description="Slope and soil derived from the map polygon, if one was provided")
 
 
 # Define Function Declarations for Gemini Tools
@@ -177,10 +180,12 @@ mcp_tools = Tool(
 
 @app.get("/", response_class=HTMLResponse)
 def landing():
-    """Serve the project landing page (falls back to JSON status if the page is missing)."""
+    """Serve the project landing page with the Maps browser key injected."""
     index = STATIC_DIR / "index.html"
     if index.exists():
-        return FileResponse(index)
+        html = index.read_text(encoding="utf-8")
+        html = html.replace("__MAPS_BROWSER_KEY__", os.getenv("MAPS_BROWSER_KEY", ""))
+        return HTMLResponse(html)
     return HTMLResponse("<h1>Lawn Advisor</h1><p>See <a href='/api/status'>/api/status</a>.</p>")
 
 
@@ -236,6 +241,31 @@ def get_recommendation(yard: YardInput):
     5. Returns structured recommendation and trace ID to the client.
     """
     try:
+        # Geo-enrichment: if a map polygon was drawn, derive real slope + soil from
+        # its coordinates and let them override / inform the recommendation.
+        site_conditions = None
+        site_note = ""
+        if yard.polygon and len(yard.polygon) >= 3:
+            site_conditions = geo.enrich_site(yard.polygon)
+            if site_conditions.get("slope", {}).get("slope_pct") is not None:
+                yard.slope_pct = site_conditions["slope"]["slope_pct"]
+            soil = site_conditions.get("soil") or {}
+            slope = site_conditions.get("slope") or {}
+            parts = []
+            if slope:
+                parts.append(f"measured steepest slope ~{slope.get('slope_pct')}% "
+                             f"(elevation {slope.get('elevation_min_m')}–{slope.get('elevation_max_m')} m)")
+            if soil:
+                tex = soil.get("texture")
+                wrb = soil.get("wrb_class")
+                desc = ", ".join(x for x in [tex, f"{wrb} soil group" if wrb else None] if x)
+                if desc:
+                    parts.append(f"soil: {desc} (clay {soil.get('clay_pct','?')}%, sand {soil.get('sand_pct','?')}%)")
+            if parts:
+                site_note = ("\n\nSite conditions read from the yard's map location — factor these into "
+                             "the mower choice and plan (e.g. clay/wet soil affects schedule, steeper slope "
+                             "needs AWD/RTK models): " + "; ".join(parts) + ".")
+
         # Initialize Gemini Model
         model = GenerativeModel(
             model_name=GEMINI_MODEL_NAME,
@@ -267,6 +297,7 @@ def get_recommendation(yard: YardInput):
             f"- Charging Power Access: {yard.charging_access}\n"
             f"- Terrain type: {yard.terrain}\n\n"
             "Query the database collections via your tools to find the perfect fit and log the plan back."
+            + site_note
         )
         
         # Send prompt and run tool execution loop
@@ -353,7 +384,9 @@ def get_recommendation(yard: YardInput):
                 "deployment_plan": last_plan["plan"],
                 "trace_id": last_plan["_id"]
             }
-            
+
+        if site_conditions:
+            parsed_data["site_conditions"] = site_conditions
         return parsed_data
 
     except json.JSONDecodeError as je:

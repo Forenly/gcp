@@ -27,7 +27,7 @@ gcloud run deploy "$SERVICE" \
   --cpu 1 \
   --timeout 300 \
   --set-env-vars "GCP_PROJECT=${PROJECT},VERTEX_LOCATION=${REGION},MONGODB_DB=lawn_advisor" \
-  --set-secrets "MONGODB_URI=mongodb-uri:latest"
+  --set-secrets "MONGODB_URI=mongodb-uri:latest,MAPS_SERVER_KEY=maps-server-key:latest,MAPS_BROWSER_KEY=maps-browser-key:latest"
 
 URL="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
 echo

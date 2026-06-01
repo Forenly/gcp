@@ -70,6 +70,16 @@
   .plan div{padding:6px 0;border-top:1px solid var(--line)}
   .plan b{color:var(--green-d)}
   .alts{font-size:13px;color:var(--muted);margin-top:8px}
+  /* map */
+  .mapcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:18px;box-shadow:0 8px 30px rgba(20,60,30,.06)}
+  .maptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .maptools input#addr{flex:1;min-width:200px}
+  .btn-clear{background:#f0f3f1;color:var(--muted)}
+  .mapinfo{font-size:12.5px;color:var(--muted)}
+  #map{width:100%;height:340px;border-radius:11px;background:#e8efe9}
+  .site{background:#fff8ec;border:1px solid #f0dcb6;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px}
+  .site b{color:var(--amber)}
+  .site .pill{display:inline-block;background:#fff;border:1px solid #f0dcb6;border-radius:999px;padding:2px 9px;margin:3px 5px 0 0;font-size:12px}
   .spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-3px;margin-right:8px}
   @keyframes rot{to{transform:rotate(360deg)}}
   /* footer */
@@ -129,7 +139,18 @@
 <section id="try">
   <div class="wrap">
     <h2>Try the advisor</h2>
-    <p class="sub">Enter a yard and let the live agent recommend a setup. This calls the real Gemini agent — give it a few seconds.</p>
+    <p class="sub">Search your address, draw your lawn on the map, and the agent reads its real area, slope and soil from those coordinates — then recommends a setup. Or just type the numbers below.</p>
+
+    <div class="mapcard">
+      <div class="maptools">
+        <input id="addr" placeholder="🔍 Search an address to find your yard…" />
+        <button id="drawbtn" class="btn" onclick="startDraw()">✏️ Draw lawn</button>
+        <button id="clearbtn" class="btn btn-clear" onclick="clearDraw()">Clear</button>
+        <span id="mapinfo" class="mapinfo">Tip: click the map corners of your lawn, then close the shape.</span>
+      </div>
+      <div id="map"></div>
+    </div>
+
     <div class="demo">
       <div class="demo-grid">
         <div>
@@ -204,13 +225,25 @@ async function recommend(){
     obstacles:$('obstacles').value.split(',').map(s=>s.trim()).filter(Boolean),
     boundary_type:$('boundary').value, charging_access:$('charging').value, terrain:$('terrain').value
   };
+  if(window.lawnPolygon && window.lawnPolygon.length>=3) body.polygon = window.lawnPolygon;
   try{
     const r=await fetch('/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json();
     if(!r.ok) throw new Error(d.detail||'request failed');
     const m=d.recommended_mower||{}, p=d.deployment_plan||{};
     const alts=(d.alternatives||[]).map(a=>`${esc(a.brand)} ${esc(a.model)}`).join(' · ')||'—';
-    res.innerHTML=`
+    let siteHtml='';
+    const sc=d.site_conditions;
+    if(sc){
+      const pills=[];
+      if(sc.slope) pills.push(`<span class="pill">Slope ~${sc.slope.slope_pct}%</span>`);
+      if(sc.slope) pills.push(`<span class="pill">Elev ${sc.slope.elevation_min_m}–${sc.slope.elevation_max_m} m</span>`);
+      if(sc.soil&&sc.soil.texture) pills.push(`<span class="pill">${esc(sc.soil.texture)}</span>`);
+      if(sc.soil&&sc.soil.wrb_class) pills.push(`<span class="pill">${esc(sc.soil.wrb_class)}</span>`);
+      if(sc.soil&&sc.soil.clay_pct!=null) pills.push(`<span class="pill">clay ${sc.soil.clay_pct}% · sand ${sc.soil.sand_pct}%</span>`);
+      if(pills.length) siteHtml=`<div class="site"><b>Read from your map location:</b><br>${pills.join('')}</div>`;
+    }
+    res.innerHTML=siteHtml+`
       <div class="rec">
         <div class="pick">Recommended</div>
         <div class="name">${esc(m.brand||'')} ${esc(m.model||'')}</div>
@@ -226,6 +259,58 @@ async function recommend(){
     res.innerHTML=`<div class="placeholder" style="color:#c0392b">Error: ${esc(e.message)}</div>`;
   }finally{ btn.disabled=false; btn.textContent='Recommend a mower'; }
 }
+
+/* ---- Google Maps: search address + draw lawn → area, and feed polygon to the agent ---- */
+let map, drawingManager, currentPolygon=null;
+window.lawnPolygon=null;
+
+function initMap(){
+  map=new google.maps.Map($('map'),{
+    center:{lat:39.5,lng:-98.35}, zoom:4, mapTypeId:'satellite', tilt:0,
+    streetViewControl:false, fullscreenControl:false, mapTypeControl:true
+  });
+  try{
+    const ac=new google.maps.places.Autocomplete($('addr'),{fields:['geometry']});
+    ac.addListener('place_changed',()=>{ const pl=ac.getPlace();
+      if(pl.geometry&&pl.geometry.location){ map.setCenter(pl.geometry.location); map.setZoom(20); } });
+  }catch(e){}
+  drawingManager=new google.maps.drawing.DrawingManager({
+    drawingMode:null, drawingControl:false,
+    polygonOptions:{fillColor:'#34b56a',fillOpacity:.28,strokeColor:'#13602f',strokeWeight:2,editable:true}
+  });
+  drawingManager.setMap(map);
+  google.maps.event.addListener(drawingManager,'polygoncomplete',poly=>{
+    if(currentPolygon) currentPolygon.setMap(null);
+    currentPolygon=poly;
+    drawingManager.setDrawingMode(null);
+    syncPolygon();
+    poly.getPath().addListener('set_at',syncPolygon);
+    poly.getPath().addListener('insert_at',syncPolygon);
+  });
+}
+function startDraw(){
+  if(!window.google||!drawingManager) return;
+  if(currentPolygon){ currentPolygon.setMap(null); currentPolygon=null; }
+  drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+  $('mapinfo').textContent='Click each corner of your lawn, then click the first point again to close it.';
+}
+function clearDraw(){
+  if(currentPolygon){ currentPolygon.setMap(null); currentPolygon=null; }
+  window.lawnPolygon=null;
+  if(drawingManager) drawingManager.setDrawingMode(null);
+  $('mapinfo').textContent='Tip: click the map corners of your lawn, then close the shape.';
+}
+function syncPolygon(){
+  if(!currentPolygon) return;
+  const path=currentPolygon.getPath(), coords=[];
+  for(let i=0;i<path.getLength();i++){ const pt=path.getAt(i); coords.push([pt.lat(),pt.lng()]); }
+  window.lawnPolygon=coords;
+  const area=google.maps.geometry.spherical.computeArea(path);
+  $('area').value=Math.round(area);
+  $('mapinfo').innerHTML=`✅ Lawn drawn — <b>${Math.round(area).toLocaleString()} m²</b>. Area filled in; slope &amp; soil are read from these coordinates when you hit Recommend.`;
+}
+window.initMap=initMap;
 </script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=__MAPS_BROWSER_KEY__&libraries=places,drawing,geometry&callback=initMap"></script>
 </body>
 </html>
