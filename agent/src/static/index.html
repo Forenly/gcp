@@ -295,7 +295,8 @@ function startDraw(){
   if(!window.google) return;
   clearDraw();
   drawing=true;
-  poly=new google.maps.Polygon({map, paths:[], fillColor:'#34b56a', fillOpacity:.28,
+  // paths:[[]] = one empty path. With paths:[] getPath() is undefined and addListener throws.
+  poly=new google.maps.Polygon({map, paths:[[]], fillColor:'#34b56a', fillOpacity:.28,
     strokeColor:'#13602f', strokeWeight:2, editable:true, clickable:false});
   poly.getPath().addListener('set_at',syncPolygon);
   poly.getPath().addListener('insert_at',syncPolygon);
