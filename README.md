@@ -1,10 +1,5 @@
 # gcp — Lawn Mower Deployment Advisor (Google Cloud + MongoDB)
 
-> [!IMPORTANT]
-> ### 🏆 GRAND PRIZE POOL: $60,000 USD ($10,000 per partner bucket!)
-> **Partners:** Arize, Elastic, Fivetran, GitLab, MongoDB. Let's build the most rapid AI agent integrations on Google Cloud and claim the $60,000 bounty! ☁️⚡
-
-
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
 > Submission for the **Google Cloud Rapid Agent Hackathon** — "Building Agents for Real-World Challenges". Partner track: **MongoDB MCP**.
