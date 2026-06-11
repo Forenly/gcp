@@ -22,6 +22,8 @@ them, and so the team stays coordinated under hackathon time pressure.
 
 ## Once you're contributing code
 
+- **Language:** everything in this project is in **English** — code, comments,
+  docstrings, UI copy, error messages, commit messages, issues, PRs, and docs.
 - **Branches:** `feature/<short-name>`, `fix/<short-name>`, `docs/<short-name>`
 - **Pull requests:** opened against `main`, squash-merged. Tag at least one team
   member for review.

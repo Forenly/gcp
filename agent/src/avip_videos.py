@@ -72,7 +72,7 @@ def delete_video(filename: str):
     if filename.lower() in core_assets:
         raise HTTPException(
             status_code=403,
-            detail="The system's core working file cannot be deleted. / Sistemin temel çalışma dosyası silinemez."
+            detail="The system's core working file cannot be deleted."
         )
     video_path = VIDEO_DIR / filename
     if not video_path.exists() or not video_path.is_file():
