@@ -8,6 +8,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
+import advisor
 import server
 
 
@@ -149,9 +150,11 @@ class _NoDB:
 def test_recommend_polygon_enrichment(client, monkeypatch):
     """A drawn polygon must trigger geo enrichment, override slope, and surface
     site_conditions in the response."""
-    monkeypatch.setattr(server, "GenerativeModel", _FakeModel)
-    monkeypatch.setattr(server, "get_db_client", lambda: _NoDB())
-    monkeypatch.setattr(server.geo, "enrich_site", lambda poly: {
+    monkeypatch.setattr(advisor, "GenerativeModel", _FakeModel)
+    monkeypatch.setattr(advisor, "get_db_client", lambda: _NoDB())
+    monkeypatch.setattr(advisor, "tool_find_similar_yards", lambda *a, **k: [])
+    monkeypatch.setattr(advisor, "tool_find_plans", lambda *a, **k: [])
+    monkeypatch.setattr(advisor.geo, "enrich_site", lambda poly: {
         "slope": {"slope_pct": 21.4, "elevation_min_m": 100, "elevation_max_m": 110, "samples": 5},
         "soil": {"wrb_class": "Kastanozems"},
         "centroid": {"lat": 37.7, "lng": -122.4},
@@ -168,7 +171,7 @@ def test_recommend_polygon_enrichment(client, monkeypatch):
 
 
 def test_send_with_retry_recovers_from_429(monkeypatch):
-    monkeypatch.setattr(server.time, "sleep", lambda _s: None)  # no real waiting
+    monkeypatch.setattr(advisor.time, "sleep", lambda _s: None)  # no real waiting
     calls = {"n": 0}
 
     class Chat:
@@ -178,12 +181,12 @@ def test_send_with_retry_recovers_from_429(monkeypatch):
                 raise RuntimeError("429 Resource exhausted. Please try again later.")
             return "ok"
 
-    assert server._send_with_retry(Chat(), "hi", retries=4, base_delay=0) == "ok"
+    assert advisor._send_with_retry(Chat(), "hi", retries=4, base_delay=0) == "ok"
     assert calls["n"] == 3  # failed twice, succeeded on the third
 
 
 def test_send_with_retry_recovers_from_response_validation(monkeypatch):
-    monkeypatch.setattr(server.time, "sleep", lambda _s: None)
+    monkeypatch.setattr(advisor.time, "sleep", lambda _s: None)
     calls = {"n": 0}
 
     class ResponseValidationError(Exception):
@@ -196,30 +199,30 @@ def test_send_with_retry_recovers_from_response_validation(monkeypatch):
                 raise ResponseValidationError("The model response did not complete successfully.")
             return "ok"
 
-    assert server._send_with_retry(Chat(), "hi", retries=3, base_delay=0) == "ok"
+    assert advisor._send_with_retry(Chat(), "hi", retries=3, base_delay=0) == "ok"
     assert calls["n"] == 2
 
 
 def test_send_with_retry_reraises_non_quota(monkeypatch):
-    monkeypatch.setattr(server.time, "sleep", lambda _s: None)
+    monkeypatch.setattr(advisor.time, "sleep", lambda _s: None)
 
     class Chat:
         def send_message(self, _msg):
             raise ValueError("bad request — not a quota error")
 
     with pytest.raises(ValueError):
-        server._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
+        advisor._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
 
 
 def test_send_with_retry_gives_up_after_retries(monkeypatch):
-    monkeypatch.setattr(server.time, "sleep", lambda _s: None)
+    monkeypatch.setattr(advisor.time, "sleep", lambda _s: None)
 
     class Chat:
         def send_message(self, _msg):
             raise RuntimeError("429 resource exhausted")
 
     with pytest.raises(RuntimeError, match="429"):
-        server._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
+        advisor._send_with_retry(Chat(), "hi", retries=2, base_delay=0)
 
 
 def test_normalize_recommendation_maps_and_grounds(monkeypatch):
@@ -234,7 +237,7 @@ def test_normalize_recommendation_maps_and_grounds(monkeypatch):
                 @staticmethod
                 def find_one(q):
                     return full if q.get("_id") == "mammotion-luba2-5000" else None
-    monkeypatch.setattr(server, "get_db_client", lambda: DB())
+    monkeypatch.setattr(advisor, "get_db_client", lambda: DB())
 
     raw = {
         "recommended_mower": {"id": "mammotion-luba2-5000", "brand": "Mammotion",
@@ -244,7 +247,7 @@ def test_normalize_recommendation_maps_and_grounds(monkeypatch):
                             "zones_and_priorities": [{"zone": "front", "priority": 1}],
                             "plan_id": "plan-abc", "schedule": "Mon/Wed/Fri"},
     }
-    out = server._normalize_recommendation(raw)
+    out = advisor._normalize_recommendation(raw)
     # mower grounded from DB (year/charging/price_tier backfilled) + notes preserved + _id set
     assert out["recommended_mower"]["_id"] == "mammotion-luba2-5000"
     assert out["recommended_mower"]["year"] == 2024
@@ -258,7 +261,7 @@ def test_normalize_recommendation_maps_and_grounds(monkeypatch):
 
 
 def test_build_grounding_summarizes_and_dedupes(monkeypatch):
-    monkeypatch.setattr(server, "_mower_cache", {
+    monkeypatch.setattr(advisor, "_mower_cache", {
         "mammotion-luba2-5000": {"_id": "mammotion-luba2-5000", "boundary_tech": "virtual-rtk-gps"},
         "stihl-imow-5": {"_id": "stihl-imow-5", "boundary_tech": "wire"},
     })
@@ -272,7 +275,7 @@ def test_build_grounding_summarizes_and_dedupes(monkeypatch):
         {"_id": "p2", "mower_id": "stihl-imow-5"},
         {"_id": "p2", "mower_id": "stihl-imow-5"},               # dup
     ]
-    g = server._build_grounding(yards, plans)
+    g = advisor._build_grounding(yards, plans)
     assert g["similar_yards"] == 2
     assert g["historical_plans"] == 2
     assert g["avg_slope_pct"] == 13.0  # (4+22)/2
@@ -281,7 +284,7 @@ def test_build_grounding_summarizes_and_dedupes(monkeypatch):
 
 
 def test_build_grounding_empty_returns_none():
-    assert server._build_grounding([], []) is None
+    assert advisor._build_grounding([], []) is None
 
 
 class _Yard:
@@ -292,7 +295,7 @@ class _Yard:
 
 def test_build_rollout_phases_and_boundary_aware():
     mower = {"boundary_tech": "virtual-rtk-gps", "max_yard_area_sqm": 5000}
-    r = server._build_rollout(mower, _Yard(800, ["pond", "tree"]), {"dock_location": "patio", "schedule": "Mon-Fri"})
+    r = advisor._build_rollout(mower, _Yard(800, ["pond", "tree"]), {"dock_location": "patio", "schedule": "Mon-Fri"})
     assert [s["day"] for s in r] == [1, 2, 3, 4]
     assert "RTK" in r[0]["detail"]
     assert "pond" in r[0]["detail"]              # obstacle exclusion noted
@@ -302,7 +305,7 @@ def test_build_rollout_phases_and_boundary_aware():
 
 def test_build_rollout_multi_unit_note():
     mower = {"boundary_tech": "wire", "max_yard_area_sqm": 1500}
-    r = server._build_rollout(mower, _Yard(4000, []), {})
+    r = advisor._build_rollout(mower, _Yard(4000, []), {})
     assert "wire" in r[0]["detail"].lower()
     assert "3 units" in r[2]["detail"]           # ceil(4000/1500)=3
 
@@ -315,8 +318,8 @@ def test_normalize_recommendation_handles_missing_db(monkeypatch):
                 @staticmethod
                 def find_one(q):
                     return None
-    monkeypatch.setattr(server, "get_db_client", lambda: DB())
-    out = server._normalize_recommendation(
+    monkeypatch.setattr(advisor, "get_db_client", lambda: DB())
+    out = advisor._normalize_recommendation(
         {"recommended_mower": {"id": "unknown", "brand": "B", "model": "M"}})
     assert out["recommended_mower"]["_id"] == "unknown"
     assert out["recommended_mower"]["brand"] == "B"
@@ -324,12 +327,14 @@ def test_normalize_recommendation_handles_missing_db(monkeypatch):
 
 
 def test_recommend_without_polygon_no_enrichment(client, monkeypatch):
-    monkeypatch.setattr(server, "GenerativeModel", _FakeModel)
-    monkeypatch.setattr(server, "get_db_client", lambda: _NoDB())
+    monkeypatch.setattr(advisor, "GenerativeModel", _FakeModel)
+    monkeypatch.setattr(advisor, "get_db_client", lambda: _NoDB())
+    monkeypatch.setattr(advisor, "tool_find_similar_yards", lambda *a, **k: [])
+    monkeypatch.setattr(advisor, "tool_find_plans", lambda *a, **k: [])
 
     def fail(_):
         raise AssertionError("enrich_site must not be called without a polygon")
-    monkeypatch.setattr(server.geo, "enrich_site", fail)
+    monkeypatch.setattr(advisor.geo, "enrich_site", fail)
     r = client.post("/recommend", json={"area_sqm": 800, "slope_pct": 12})
     assert r.status_code == 200, r.text
     assert r.json().get("site_conditions") is None

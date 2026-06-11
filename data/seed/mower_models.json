@@ -89,5 +89,83 @@
     "charging": "auto-dock",
     "price_tier": "mid-range",
     "source_url": "https://www.roboup.com/"
+  },
+  {
+    "_id": "gardena-sileno-city-250",
+    "brand": "Gardena",
+    "model": "Sileno City 250",
+    "year": 2022,
+    "max_yard_area_sqm": 250,
+    "max_slope_pct": 35,
+    "obstacle_handling": "bumper",
+    "boundary_tech": "wire",
+    "charging": "auto-dock",
+    "price_tier": "entry-level",
+    "source_url": "https://www.gardena.com/int/products/lawn-care/robotic-mowers/robotic-mower-sileno-city-250/967647203/"
+  },
+  {
+    "_id": "worx-landroid-vision-l1200",
+    "brand": "Worx",
+    "model": "Landroid Vision L1200 (WR312E)",
+    "year": 2023,
+    "max_yard_area_sqm": 1200,
+    "max_slope_pct": 30,
+    "obstacle_handling": "vision-ai + bumper",
+    "boundary_tech": "virtual-vision",
+    "charging": "auto-dock",
+    "price_tier": "premium",
+    "source_url": "https://eu.worx.com/en/landroid-vision-l-1200-wr212e/"
+  },
+  {
+    "_id": "ambrogio-l400-deluxe",
+    "brand": "Ambrogio",
+    "model": "L400 Deluxe",
+    "year": 2023,
+    "max_yard_area_sqm": 20000,
+    "max_slope_pct": 45,
+    "obstacle_handling": "radar + bumper",
+    "boundary_tech": "wire-or-gps",
+    "charging": "auto-dock",
+    "price_tier": "premium",
+    "source_url": "https://www.ambrogiorobot.com/en/models/l400-deluxe"
+  },
+  {
+    "_id": "segway-navimow-h3000e",
+    "brand": "Segway",
+    "model": "Navimow H3000E",
+    "year": 2022,
+    "max_yard_area_sqm": 3000,
+    "max_slope_pct": 45,
+    "obstacle_handling": "ultrasonic + bumper",
+    "boundary_tech": "virtual-rtk-gps",
+    "charging": "auto-dock",
+    "price_tier": "premium",
+    "source_url": "https://navimow.segway.com/product/navimow-h-series.html"
+  },
+  {
+    "_id": "kress-mission-mega-kr133e",
+    "brand": "Kress",
+    "model": "Mission Mega KR133E",
+    "year": 2023,
+    "max_yard_area_sqm": 4400,
+    "max_slope_pct": 45,
+    "obstacle_handling": "ultrasonic + bumper",
+    "boundary_tech": "wire",
+    "charging": "auto-dock",
+    "price_tier": "premium",
+    "source_url": "https://www.kress.com/en/product/kress-mission-mega-3000-kr133e/"
+  },
+  {
+    "_id": "greenworks-optimow-50",
+    "brand": "Greenworks",
+    "model": "Optimow 50",
+    "year": 2023,
+    "max_yard_area_sqm": 2000,
+    "max_slope_pct": 35,
+    "obstacle_handling": "bumper",
+    "boundary_tech": "wire",
+    "charging": "auto-dock",
+    "price_tier": "mid-range",
+    "source_url": "https://www.greenworkstools.com/products/optimow-50-robotic-lawn-mower"
   }
 ]

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lawn Advisor — Autonomous Mower Deployment Agent</title>
 <meta name="description" content="An agentic advisor that recommends the right robotic lawn mower and a full deployment plan for any yard. Built on Gemini + Agent Builder + MongoDB MCP on Google Cloud.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --green:#1f8a4c; --green-d:#13602f; --green-l:#e8f5ec;
@@ -161,8 +164,8 @@
     <h2>The mower registry</h2>
     <p class="sub">Real robotic mowers the agent grounds its recommendations on. Pulled live from MongoDB.</p>
     <div class="grid" id="mowers"><p class="placeholder">Loading registry…</p></div>
-  </div>
 </section>
+
 
 <section id="try">
   <div class="wrap">
@@ -400,6 +403,8 @@ function syncPolygon(){
   $('area').value=Math.round(area);
   $('mapinfo').innerHTML=`✅ Lawn drawn — <b>${Math.round(area).toLocaleString()} m²</b>. Slope &amp; soil are read from these coordinates when you hit Recommend.`;
 }
+
+
 window.initMap=initMap;
 </script>
 <script async src="https://maps.googleapis.com/maps/api/js?key=__MAPS_BROWSER_KEY__&libraries=geometry&loading=async&callback=initMap"></script>

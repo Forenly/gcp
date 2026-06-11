@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Walkthrough videos — The narrated demo standard · Lawn Advisor</title>
+<meta name="description" content="At Forenly, a demo video isn't done when it plays — it's done when it explains. A visual playbook for turning a raw screen recording into a narrated, chaptered walkthrough with Trupeer.ai. A Forenly Lab playbook.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#1f8a4c; --green-d:#13602f; --green-l:#e8f5ec;
+    --lawn:#89B246; --lawn-d:#6ba62f; --lawn-l:#c0e582;
+    --ink:#15231b; --muted:#5b6b61; --line:#e7efe9; --bg:#f6faf6; --card:#fff;
+    --red:#c0392b; --red-l:#fdecea; --amber:#c47a12; --amber-l:#fbf3e3;
+    --shadow:0 20px 50px rgba(20,60,30,.07); --shadow-lg:0 28px 64px rgba(20,60,30,.14);
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--green);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+
+  /* HERO */
+  header.hero{position:relative;background:linear-gradient(135deg,#082814 0%,#13602f 58%,#2c8f50 100%);color:#fff;padding:46px 0 50px;overflow:hidden}
+  header.hero .blob{position:absolute;border-radius:50%;pointer-events:none;filter:blur(120px)}
+  header.hero .b1{top:-30%;left:-8%;width:460px;height:460px;background:rgba(137,178,70,.34)}
+  header.hero .b2{bottom:-50%;right:-10%;width:520px;height:520px;background:rgba(63,172,213,.18)}
+  header.hero .wrap{position:relative;z-index:1}
+  .crumb{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .crumb a{color:#fff;opacity:.9}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(8px);padding:5px 13px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.4px;margin-right:7px}
+  .ping{position:relative;display:flex;height:7px;width:7px}
+  .ping span{position:absolute;display:inline-flex;border-radius:50%;height:100%;width:100%;background:var(--lawn-l)}
+  .ping .a{animation:ping 1.8s var(--ease) infinite}
+  @keyframes ping{75%,100%{transform:scale(2.6);opacity:0}}
+  header.hero h1{font-size:38px;font-weight:900;letter-spacing:-.03em;margin:16px 0 10px;line-height:1.08}
+  header.hero h1 em{font-style:normal;background:linear-gradient(120deg,#c0e582,#89B246);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.hero p{font-size:16.5px;color:rgba(255,255,255,.9);max-width:650px;line-height:1.55}
+
+  main{padding:34px 0 64px}
+  .eyebrow{text-align:center;font-size:11.5px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--lawn-d);margin:48px 0 6px}
+  h2{text-align:center;font-size:25px;font-weight:900;letter-spacing:-.02em;margin:0 0 6px;line-height:1.15}
+  h2 .g{background:linear-gradient(120deg,var(--green) 0%,var(--lawn-d) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{text-align:center;color:var(--muted);font-size:14.5px;margin:0 auto 22px;max-width:560px}
+  strong{font-weight:700;color:var(--ink)}
+  p{color:#33433a}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* before / after */
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0}
+  .panel{position:relative;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+  .panel:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .panel.bad{border-color:#f2d4cf}
+  .panel.good{border-color:#c5e8d0}
+  .tag{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin-bottom:13px}
+  .bad .tag{background:var(--red-l);color:var(--red)}
+  .good .tag{background:var(--green-l);color:var(--green-d)}
+  .panel svg{width:100%;height:auto;display:block;border-radius:12px}
+  .panel ul{list-style:none;margin:14px 0 0}
+  .panel li{font-size:13.5px;padding:5px 0 5px 25px;position:relative;color:#34433a}
+  .panel li:before{position:absolute;left:0;top:5px;font-weight:800}
+  .bad li:before{content:"✕";color:var(--red)}
+  .good li:before{content:"✓";color:var(--green)}
+  .arrowrow{text-align:center;margin:18px 0 2px;font-size:14px;color:var(--muted);font-weight:600}
+  .arrowrow b{color:var(--lawn-d)}
+
+  /* feature cards */
+  .feat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .feat>div{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 15px;text-align:center;box-shadow:var(--shadow);overflow:hidden;transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+  .feat>div:before{content:"";position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(137,178,70,.16),transparent 70%);opacity:0;transition:opacity .4s var(--ease)}
+  .feat>div:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+  .feat>div:hover:before{opacity:1}
+  .feat .ic{position:relative;width:48px;height:48px;margin:0 auto 11px;border-radius:14px;background:linear-gradient(135deg,var(--green-l),#d6f0df);display:flex;align-items:center;justify-content:center;font-size:24px}
+  .feat b{display:block;font-size:14.5px;font-weight:800;color:var(--green-d);margin-bottom:5px}
+  .feat p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5}
+
+  /* pipeline */
+  .pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin:8px 0;align-items:start}
+  .pipe .node{text-align:center;position:relative;padding:0 5px}
+  .pipe .node:not(:last-child):after{content:"";position:absolute;right:-7px;top:23px;width:14px;height:2px;background:linear-gradient(90deg,var(--lawn),transparent)}
+  .pipe .dot{width:46px;height:46px;margin:0 auto 10px;border-radius:14px;background:var(--card);color:var(--green-d);display:flex;align-items:center;justify-content:center;font-size:21px;border:1px solid var(--line);box-shadow:var(--shadow);transition:transform .35s var(--ease)}
+  .pipe .node:hover .dot{transform:translateY(-3px) scale(1.04)}
+  .pipe .n{font-size:12.5px;font-weight:800;color:var(--ink);display:block}
+  .pipe .d{font-size:11px;color:var(--muted);display:block;margin-top:3px;line-height:1.4}
+  .pipe .node.key .dot{background:linear-gradient(135deg,var(--green),var(--lawn-d));color:#fff;border-color:transparent;box-shadow:0 12px 26px rgba(31,138,76,.34)}
+
+  /* mockup screenshot */
+  .shot{position:relative;background:linear-gradient(135deg,#0c1f14,#10301d);border-radius:20px;padding:10px;box-shadow:var(--shadow-lg);margin:8px 0}
+  .shot svg{width:100%;height:auto;display:block;border-radius:12px}
+  .shotcap{text-align:center;font-size:13px;color:var(--muted);margin-top:14px;font-style:italic}
+
+  /* callout */
+  .callout{background:linear-gradient(135deg,#fdf6e8,var(--amber-l));border:1px solid #eccf97;border-radius:18px;padding:18px 20px;margin:20px 0;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow)}
+  .callout .ci{font-size:24px;line-height:1}
+  .callout .k{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+  .callout p{font-size:13.5px;margin:0;color:#4a3a1e;line-height:1.55}
+
+  /* checklist */
+  .check{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px 22px;margin:8px 0;box-shadow:var(--shadow)}
+  .check li{list-style:none;padding:13px 0 13px 34px;position:relative;font-size:14px;border-top:1px solid var(--line);color:#33433a}
+  .check li:first-child{border-top:none}
+  .check li:before{content:"✓";position:absolute;left:0;top:12px;width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--green),var(--lawn-d));color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+
+  /* CTA button */
+  .cta{display:inline-flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.02em;text-decoration:none;border-radius:14px;transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s var(--ease)}
+  .cta:hover{text-decoration:none;transform:translateY(-2px)}
+  .cta-hero{margin-top:22px;padding:14px 24px;font-size:15px;color:#0c1f14;background:linear-gradient(135deg,#c0e582,#89B246);box-shadow:0 14px 30px rgba(137,178,70,.4)}
+  .cta-hero:hover{box-shadow:0 18px 40px rgba(137,178,70,.55)}
+  .cta-hero .arrow{transition:transform .3s var(--ease)} .cta-hero:hover .arrow{transform:translateX(4px)}
+  .cta-hint{display:block;margin-top:10px;font-size:12.5px;color:rgba(255,255,255,.7)}
+  .ctawrap{text-align:center;margin:26px 0 4px}
+  .cta-big{padding:16px 30px;font-size:16px;color:#fff;background:linear-gradient(135deg,var(--green),var(--lawn-d));box-shadow:0 16px 34px rgba(31,138,76,.36)}
+  .cta-big:hover{box-shadow:0 22px 46px rgba(31,138,76,.5)}
+  .cta-big .arrow{transition:transform .3s var(--ease)} .cta-big:hover .arrow{transform:translateX(4px)}
+  .cta-sub{display:block;text-align:center;font-size:12.5px;color:var(--muted);margin-top:11px}
+
+  hr{border:none;border-top:1px solid var(--line);margin:40px 0 24px}
+  .foot{font-size:13px;color:var(--muted);font-style:italic;text-align:center;max-width:600px;margin:0 auto}
+
+  @media(max-width:680px){
+    header.hero h1{font-size:30px}
+    .ba,.feat{grid-template-columns:1fr 1fr}
+    .pipe{grid-template-columns:repeat(3,1fr);row-gap:22px}
+    .pipe .node:nth-child(3):after{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap">
+    <div class="crumb">
+      <a href="/">Lawn Advisor</a> <span>›</span> <span style="opacity:.7">guides</span> <span>›</span> <span>walkthrough videos</span>
+    </div>
+    <span class="pill"><span class="ping"><span class="a"></span><span></span></span> Communication Standard</span>
+    <span class="pill">Forenly Lab</span>
+    <h1>The <em>narrated</em> demo standard</h1>
+    <p>A demo video isn’t done when it <em>plays</em> — it’s done when it <em>explains</em>. Here’s how we turn a raw screen recording into a narrated, chaptered walkthrough with the tool below.</p>
+    <a class="cta cta-hero" href="https://www.trupeer.ai/" target="_blank" rel="noopener">▶ Open Trupeer.ai <span class="arrow">→</span></a>
+    <span class="cta-hint">👆 This is the tool you’ll use — click to open it, then follow the steps below.</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- BEFORE / AFTER -->
+    <div class="reveal">
+      <p class="eyebrow">The one thing to fix</p>
+      <h2>Great capture, <span class="g">silent</span> delivery</h2>
+      <p class="sub">The issue&nbsp;#10 demo walks the whole flow cleanly — the only gap is there’s no narration.</p>
+    </div>
+    <div class="ba reveal">
+      <div class="panel bad">
+        <span class="tag">🔇 Raw recording</span>
+        <video class="w-full rounded-xl aspect-[16/9] mb-4 bg-black border border-black/10" controls preload="metadata">
+          <source src="lawn-advisor-demo.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <ul>
+          <li>Viewer guesses <em>why</em> each click happens</li>
+          <li>No cue for which moment matters</li>
+          <li>Can’t jump to a step — must scrub</li>
+        </ul>
+      </div>
+      <div class="panel good">
+        <span class="tag">🔊 Walkthrough</span>
+        <video class="w-full rounded-xl aspect-[16/9] mb-4 bg-black border border-black/10" controls preload="metadata">
+          <source src="autonomous-outdoor-robot-deployment-advisor-guide.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <ul>
+          <li>Voiceover explains every action</li>
+          <li>Smart zoom points at what matters</li>
+          <li>Chapters let you jump to a step</li>
+        </ul>
+      </div>
+    </div>
+    <p class="arrowrow reveal">same flow you already recorded <b>→ now self-explanatory</b></p>
+
+    <!-- WHAT TRUPEER ADDS -->
+    <div class="reveal">
+      <p class="eyebrow">What Trupeer adds — automatically</p>
+      <h2>Four layers, <span class="g">one click</span></h2>
+      <p class="sub">You have the footage. Trupeer adds the layers that make it a walkthrough.</p>
+    </div>
+    <div class="feat reveal">
+      <div><div class="ic">🎙️</div><b>Narration</b><p>AI writes a script from your recording &amp; voices it. No mic needed.</p></div>
+      <div><div class="ic">🔍</div><b>Smart zooms</b><p>Auto-highlights each click so the eye follows the action.</p></div>
+      <div><div class="ic">📑</div><b>Chapters</b><p>Splits the flow into labeled, jumpable steps.</p></div>
+      <div><div class="ic">📝</div><b>Written guide</b><p>Same recording exported as a step-by-step doc.</p></div>
+    </div>
+
+    <!-- ANNOTATED MOCKUP -->
+    <div class="reveal">
+      <p class="eyebrow">What you’ll work in</p>
+      <h2>One recording in, a <span class="g">walkthrough</span> out</h2>
+      <p class="sub">Trupeer’s editor lays the voiceover, zooms &amp; chapters on top of your capture.</p>
+    </div>
+    <div class="shot reveal">
+      <svg viewBox="0 0 860 380" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+        <rect width="860" height="380" rx="14" fill="#0c1f14"/>
+        <rect x="0" y="0" width="860" height="34" rx="14" fill="#10301d"/>
+        <circle cx="18" cy="17" r="4" fill="#e07b6a"/><circle cx="34" cy="17" r="4" fill="#e3c45f"/><circle cx="50" cy="17" r="4" fill="#74c98c"/>
+        <text x="430" y="22" font-size="13" text-anchor="middle" fill="#9fc7ad">Trupeer — Lawn Advisor Demo · editor</text>
+        <rect x="14" y="46" width="170" height="262" rx="9" fill="#11291c"/>
+        <text x="26" y="68" font-size="12" fill="#cdeed7" font-weight="700">📑 Chapters</text>
+        <rect x="24" y="80" width="150" height="30" rx="7" fill="#1f8a4c"/>
+        <text x="36" y="99" font-size="11.5" fill="#fff">1 · Open the map</text>
+        <rect x="24" y="116" width="150" height="30" rx="7" fill="#163823"/>
+        <text x="36" y="135" font-size="11.5" fill="#bfe0c9">2 · Draw the lawn</text>
+        <rect x="24" y="152" width="150" height="30" rx="7" fill="#163823"/>
+        <text x="36" y="171" font-size="11.5" fill="#bfe0c9">3 · Get AI advice</text>
+        <rect x="24" y="188" width="150" height="30" rx="7" fill="#163823"/>
+        <text x="36" y="207" font-size="11.5" fill="#bfe0c9">4 · Read the plan</text>
+        <rect x="24" y="224" width="150" height="30" rx="7" fill="#163823"/>
+        <text x="36" y="243" font-size="11.5" fill="#bfe0c9">5 · Recap</text>
+        <rect x="200" y="46" width="490" height="200" rx="9" fill="#16241c"/>
+        <rect x="222" y="70" width="446" height="150" rx="7" fill="#22382b"/>
+        <rect x="420" y="108" width="150" height="70" rx="9" fill="none" stroke="#41d27e" stroke-width="3"/>
+        <text x="575" y="118" font-size="13" fill="#41d27e">🔍 smart zoom</text>
+        <text x="245" y="100" font-size="12" fill="#7fae90">live preview</text>
+        <rect x="706" y="46" width="140" height="200" rx="9" fill="#11291c"/>
+        <text x="718" y="68" font-size="12" fill="#cdeed7" font-weight="700">📝 Script</text>
+        <rect x="718" y="80" width="116" height="7" rx="2" fill="#3a6b4c"/>
+        <rect x="718" y="93" width="116" height="7" rx="2" fill="#3a6b4c"/>
+        <rect x="718" y="106" width="92" height="7" rx="2" fill="#3a6b4c"/>
+        <rect x="718" y="126" width="116" height="7" rx="2" fill="#2c5239"/>
+        <rect x="718" y="139" width="100" height="7" rx="2" fill="#2c5239"/>
+        <text x="718" y="170" font-size="10.5" fill="#8fbf9f">editable —</text>
+        <text x="718" y="186" font-size="10.5" fill="#8fbf9f">fix wording here</text>
+        <rect x="200" y="258" width="646" height="50" rx="9" fill="#11291c"/>
+        <text x="214" y="278" font-size="11" fill="#cdeed7">🎙️ voiceover</text>
+        <g fill="#41d27e">
+          <rect x="300" y="280" width="3" height="12" rx="1.5"/><rect x="307" y="274" width="3" height="24" rx="1.5"/><rect x="314" y="268" width="3" height="36" rx="1.5"/><rect x="321" y="277" width="3" height="18" rx="1.5"/><rect x="328" y="271" width="3" height="30" rx="1.5"/><rect x="335" y="282" width="3" height="8" rx="1.5"/><rect x="342" y="275" width="3" height="22" rx="1.5"/><rect x="349" y="279" width="3" height="14" rx="1.5"/><rect x="356" y="270" width="3" height="32" rx="1.5"/><rect x="363" y="276" width="3" height="20" rx="1.5"/><rect x="370" y="281" width="3" height="10" rx="1.5"/><rect x="377" y="273" width="3" height="26" rx="1.5"/><rect x="384" y="278" width="3" height="16" rx="1.5"/><rect x="391" y="269" width="3" height="34" rx="1.5"/><rect x="398" y="277" width="3" height="18" rx="1.5"/><rect x="405" y="272" width="3" height="28" rx="1.5"/><rect x="412" y="282" width="3" height="9" rx="1.5"/><rect x="419" y="274" width="3" height="24" rx="1.5"/><rect x="426" y="279" width="3" height="14" rx="1.5"/><rect x="433" y="271" width="3" height="30" rx="1.5"/><rect x="440" y="278" width="3" height="16" rx="1.5"/><rect x="447" y="275" width="3" height="22" rx="1.5"/><rect x="454" y="281" width="3" height="10" rx="1.5"/><rect x="461" y="273" width="3" height="26" rx="1.5"/><rect x="468" y="277" width="3" height="18" rx="1.5"/><rect x="475" y="270" width="3" height="32" rx="1.5"/><rect x="482" y="279" width="3" height="14" rx="1.5"/><rect x="489" y="276" width="3" height="20" rx="1.5"/><rect x="496" y="282" width="3" height="9" rx="1.5"/><rect x="503" y="274" width="3" height="24" rx="1.5"/><rect x="510" y="271" width="3" height="30" rx="1.5"/><rect x="517" y="278" width="3" height="16" rx="1.5"/><rect x="524" y="277" width="3" height="18" rx="1.5"/><rect x="531" y="272" width="3" height="28" rx="1.5"/><rect x="538" y="281" width="3" height="10" rx="1.5"/><rect x="545" y="275" width="3" height="22" rx="1.5"/>
+        </g>
+        <rect x="380" y="262" width="2" height="42" fill="#74c98c" opacity=".5"/>
+        <rect x="470" y="262" width="2" height="42" fill="#74c98c" opacity=".5"/>
+        <rect x="560" y="262" width="2" height="42" fill="#74c98c" opacity=".5"/>
+      </svg>
+      <p class="shotcap">Trupeer editor — chapters (left) · smart-zoom preview (center) · editable script (right) · voiceover waveform (bottom).</p>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="reveal">
+      <p class="eyebrow">The flow</p>
+      <h2>Recording → <span class="g">published</span></h2>
+    </div>
+    <div class="pipe reveal">
+      <div class="node"><div class="dot">⬆️</div><span class="n">Import</span><span class="d">upload the .mp4 or re-record</span></div>
+      <div class="node key"><div class="dot">⚡</div><span class="n">Generate</span><span class="d">1 click → voice, zooms, chapters</span></div>
+      <div class="node"><div class="dot">✍️</div><span class="n">Review script</span><span class="d">fix wording — quality lives here</span></div>
+      <div class="node"><div class="dot">🎨</div><span class="n">Polish</span><span class="d">brand colors, chapter titles</span></div>
+      <div class="node"><div class="dot">📤</div><span class="n">Export both</span><span class="d">video + written guide</span></div>
+      <div class="node"><div class="dot">🚀</div><span class="n">Share v2</span><span class="d">post in the channel</span></div>
+    </div>
+
+    <div class="ctawrap reveal">
+      <a class="cta cta-big" href="https://www.trupeer.ai/" target="_blank" rel="noopener">▶ Start in Trupeer.ai <span class="arrow">→</span></a>
+      <span class="cta-sub">Opens trupeer.ai in a new tab — sign in and import your recording to begin.</span>
+    </div>
+
+    <div class="callout reveal">
+      <span class="ci">💡</span>
+      <div>
+        <div class="k">Why Trupeer, not a re-record</div>
+        <p>Re-recording with a mic means a clean take, a script, manual edits and zoom work. Trupeer does all of that in one pass — and hands you a written guide on top. It closes the exact gap (no narration) without the manual effort.</p>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="reveal">
+      <p class="eyebrow">Definition of done</p>
+      <h2>v2 is done <span class="g">when…</span></h2>
+    </div>
+    <ul class="check reveal">
+      <li>Narration on every step — <strong>no silent stretches</strong></li>
+      <li>Script <strong>reviewed &amp; correct</strong> (names, actions, intent)</li>
+      <li>Split into <strong>chapters</strong> that map to real steps</li>
+      <li><strong>Smart zooms</strong> point at the action on each click</li>
+      <li>Both the <strong>video and written guide</strong> exported &amp; shared</li>
+      <li>A teammate can <strong>follow it cold</strong> — no live narration from you</li>
+    </ul>
+
+    <hr>
+    <p class="foot reveal">A Forenly Lab playbook — how we explain our work in video. Pairs with the <a href="/github-cicd">GitHub &amp; CI/CD</a> playbook. When a teammate ships a demo, send them the link.</p>
+
+  </div>
+</main>
+
+<script>
+  (function(){
+    var els=document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}})
+    },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+    els.forEach(function(e){io.observe(e)});
+  })();
+</script>
+
+</body>
+</html>

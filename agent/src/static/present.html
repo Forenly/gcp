@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    // Immediate script to prevent theme flashing
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forenly AVIP — Autonomous AI Video Production & Analysis Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/present.css?v=6">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="blur-orb-1"></div>
+  <div class="blur-orb-2"></div>
+
+  <div class="presentation-container">
+    <!-- Header -->
+    <header>
+      <div class="brand-area">
+        <a href="/" class="back-btn">← Go Back</a>
+        <div class="brand-logo">Lawn Advisor</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <button id="themeToggleBtn" class="theme-toggle-btn-round" title="Toggle Theme" onclick="toggleTheme()">
+          <!-- Moon Icon (shown when in Light mode to switch to Dark) -->
+          <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <!-- Sun Icon (shown when in Dark mode to switch to Light) -->
+          <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+        <div class="badge-row">
+          <span class="badge"><span class="live-dot"></span>Modal GPU Cloud</span>
+          <span class="badge badge-blue">Interactive Demo Deck</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Headline -->
+    <div class="present-hero">
+      <h1>Autonomous AI Video Production & Analysis Presentation</h1>
+      <p>Serverless NVIDIA A10G GPU workflow from scratch: Whisper transcription, parallel Qwen2.5-VL video analysis, and EchoMimicV3 (SOTA) + RIFE 50 FPS talking-avatar narration.</p>
+    </div>
+
+    <!-- Presentation Grid -->
+    <div class="present-grid" id="presentGrid" style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+      
+      <!-- Left Column: Project Management Console -->
+      <div class="present-card">
+        <div class="card-title">
+          <span>📁</span>
+          <span>AI Video Project Console</span>
+        </div>
+
+        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 12px;">
+          Create, edit, select, or delete autonomous narrator projects. Each target website URL defines the domain for the video pipeline.
+        </p>
+
+        <!-- Project Selector Dropdown and Actions -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center;">
+          <div style="flex: 1; position: relative;">
+            <select id="projectSelect" class="url-input" onchange="onProjectChange()" style="width: 100%; appearance: none; padding: 10px 32px 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); cursor: pointer; border-radius: 12px; color: var(--text-main); font-family: var(--font-outfit); font-size: 13.5px; outline: none;">
+              <!-- Options populated dynamically -->
+            </select>
+            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); font-size: 10px;">▼</span>
+          </div>
+          <button class="btn btn-secondary" onclick="createProject()" style="padding: 10px 14px; font-size: 12.5px; border-radius: 12px;" title="New Project">➕ New</button>
+          <button class="btn btn-secondary" onclick="editProject()" style="padding: 10px 14px; font-size: 12.5px; border-radius: 12px;" title="Rename Project">✏️ Rename</button>
+          <button class="btn btn-secondary" onclick="deleteProject()" style="padding: 10px 14px; font-size: 12.5px; border-radius: 12px; color: #f85149; border-color: rgba(248,81,73,0.15);" title="Delete Project">❌ Del</button>
+        </div>
+
+        <!-- Target Website URL Input box -->
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+          <label class="url-input-label">
+            <span>🌐 Target Web Page for Narration:</span>
+          </label>
+          <div style="position: relative; display: flex; align-items: center; width: 100%;">
+            <input type="text" id="targetPageUrl" class="url-input" value="https://lawn.forenly.ai/presentation" onchange="onProjectUrlChange()" placeholder="Enter target website URL..." style="width: 100%; padding-right: 70px;" />
+            <span style="position: absolute; right: 14px; font-size: 10px; color: var(--accent-green); font-weight: bold; background: rgba(137,178,70,0.1); padding: 3px 8px; border-radius: 6px; font-family: var(--font-mono);">ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- Per-project pipeline progress (rendered by renderProjectProgress) -->
+        <div id="projectProgressRow" class="project-progress-row"></div>
+      </div>
+
+    </div>
+
+    <!-- 4-Step Interactive Pipeline Row -->
+    <div class="present-card" style="margin-bottom: 2rem; width: 100%;">
+      <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>🚀</span>
+          <span>Interactive Execution Pipeline</span>
+        </div>
+        <button class="btn btn-primary" id="btnStart" onclick="triggerMainPipeline()" style="padding: 8px 16px; border-radius: 10px; font-size: 12.5px; display: flex; align-items: center; gap: 6px;">
+          <span>🚀 RUN FULL PIPELINE</span>
+        </button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; margin-bottom: 16px; line-height: 1.4;">
+        Run the entire pipeline automatically or trigger individual steps side-by-side to watch the outputs render progressively.
+      </p>
+
+      <div class="pipeline-grid">
+        
+        <!-- Step 1 Card -->
+        <div class="pipeline-step-card" id="pstep-1">
+          <div class="pipeline-step-header">
+            <div class="pipeline-step-title-row">
+              <div class="pipeline-step-num">1</div>
+              <span class="pipeline-step-title">Interactive AI Capture</span>
+            </div>
+            <button id="runStep1" class="btn btn-primary btn-step-run" onclick="triggerStep(1)" style="padding: 4px 8px; font-size: 10px;">▶ Run</button>
+          </div>
+          <p class="pipeline-step-desc">Gemini Browser explains target page features and records screen movements.</p>
+          <div class="step-output-box" id="step1Output">
+            <div class="mini-terminal-header">
+              <span class="mini-terminal-dot red"></span>
+              <span class="mini-terminal-dot yellow"></span>
+              <span class="mini-terminal-dot green"></span>
+              <span class="mini-terminal-title">bash - capture.sh</span>
+            </div>
+            <div class="step-log-preview" id="step1Logs">Awaiting screen recording...</div>
+            <div id="step1VideoContainer" style="display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light);">
+              <video id="step1VideoPlayer" src="/api/videos/play/forenly_ai_recording.mp4" controls muted playsinline style="width: 100%; display: block;"></video>
+            </div>
+            <div class="step-outcome" id="step1Outcome"></div>
+          </div>
+        </div>
+
+
+
+        <!-- Step 3 Card -->
+        <div class="pipeline-step-card" id="pstep-3">
+          <div class="pipeline-step-header">
+            <div class="pipeline-step-title-row">
+              <div class="pipeline-step-num">2</div>
+              <span class="pipeline-step-title">GPU Secure Transfer</span>
+            </div>
+            <button id="runStep3" class="btn btn-primary btn-step-run" onclick="triggerStep(3)" style="padding: 4px 8px; font-size: 10px;" disabled>▶ Run</button>
+          </div>
+          <p class="pipeline-step-desc">Transfers raw screen recording to serverless Modal GPU bucket storage.</p>
+          <div class="step-output-box" id="step3Output">
+            <div class="mini-terminal-header">
+              <span class="mini-terminal-dot red"></span>
+              <span class="mini-terminal-dot yellow"></span>
+              <span class="mini-terminal-dot green"></span>
+              <span class="mini-terminal-title">bash - transfer.sh</span>
+            </div>
+            <div class="step-log-preview" id="step3Logs">Awaiting upload...</div>
+            <div id="step3ProgressContainer" style="display: none; margin-top: 8px; width: 100%;">
+              <div id="step3ProgressLabel" style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-green); margin-bottom: 4px;">UPLOADING...</div>
+              <div style="background: rgba(255,255,255,0.05); height: 6px; border-radius: 4px; overflow: hidden; width: 100%;">
+                <div id="step3ProgressBar" style="width: 0%; height: 100%; background: var(--accent-green); transition: width 0.3s ease;"></div>
+              </div>
+            </div>
+            <div class="step-outcome" id="step3Outcome"></div>
+          </div>
+        </div>
+
+        <!-- Step 4 Card -->
+        <div class="pipeline-step-card" id="pstep-4">
+          <div class="pipeline-step-header">
+            <div class="pipeline-step-title-row">
+              <div class="pipeline-step-num">3</div>
+              <span class="pipeline-step-title">VLM & Voice Synthesis</span>
+            </div>
+            <button id="runStep4" class="btn btn-primary btn-step-run" onclick="triggerStep(4)" style="padding: 4px 8px; font-size: 10px;" disabled>▶ Run</button>
+          </div>
+          <p class="pipeline-step-desc">Whisper STT, parallel Qwen2.5-VL frame analysis, and EchoMimicV3 generation.</p>
+          <div class="step-output-box" id="step4Output">
+            <div class="mini-terminal-header">
+              <span class="mini-terminal-dot red"></span>
+              <span class="mini-terminal-dot yellow"></span>
+              <span class="mini-terminal-dot green"></span>
+              <span class="mini-terminal-title">bash - synthesize.sh</span>
+            </div>
+            <div class="step-log-preview" id="step4Logs">Awaiting synthesis...</div>
+            <div id="step4ResultsContainer" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
+              <div class="step-log-preview" id="step4TextSummary" style="font-size: 10px; color: var(--accent-blue);">STT narration and VLM report compiled successfully. Check detailed tabs below.</div>
+            </div>
+            <div class="step-outcome" id="step4Outcome"></div>
+          </div>
+        </div>
+
+        <!-- Step 5 Card -->
+        <div class="pipeline-step-card" id="pstep-5">
+          <div class="pipeline-step-header">
+            <div class="pipeline-step-title-row">
+              <div class="pipeline-step-num">4</div>
+              <span class="pipeline-step-title">Montage & Publish</span>
+            </div>
+            <button id="runStep5" class="btn btn-primary btn-step-run" onclick="triggerStep(5)" style="padding: 4px 8px; font-size: 10px;" disabled>▶ Run</button>
+          </div>
+          <p class="pipeline-step-desc">FFmpeg composites narrator overlay and publishes video presentation to YouTube.</p>
+          <div class="step-output-box" id="step5Output">
+            <div class="mini-terminal-header">
+              <span class="mini-terminal-dot red"></span>
+              <span class="mini-terminal-dot yellow"></span>
+              <span class="mini-terminal-dot green"></span>
+              <span class="mini-terminal-title">bash - publish.sh</span>
+            </div>
+            <div class="step-log-preview" id="step5Logs">Awaiting render...</div>
+            <div id="step5VideoContainer" style="display: none; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light); position: relative; width: 100%;">
+              <video id="avatarPlayer" src="/api/videos/play/talking_avatar_em3_8s.mp4?v=hd3" controls loop playsinline style="width: 100%; display: block;"></video>
+              <div class="voice-waveform" id="voiceWave" style="position: absolute; bottom: 10px; right: 10px; z-index: 10;">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+              </div>
+            </div>
+            <!-- Compact Stats Row -->
+            <div id="avatarMetricsCard" style="display: none; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,0.015); border: 1px solid var(--border-light); padding: 6px; border-radius: 8px; width: 100%; box-sizing: border-box;">
+              <span id="metricHardware">📟 NVIDIA A100-80G</span>
+              <span>•</span>
+              <span id="metricTime">⚡ ~14.5s</span>
+              <span>•</span>
+              <span id="metricCost">🏷️ 1.9¢</span>
+            </div>
+            <div class="step-outcome" id="step5Outcome"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Detailed Analysis Container (Tabs for Transcription & Reasoning).
+         #showcaseHome is its anchor — openReportModal() temporarily moves the
+         card into the outcome modal and returns it here on close. -->
+    <div id="showcaseHome">
+    <div class="present-card" id="showcaseView" style="display: none; margin-bottom: 2rem; width: 100%;">
+      <div class="card-title">
+        <span>📋</span>
+        <span>Detailed Semantic Reports & Transcription</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        Synchronized subtitles and AI computer vision analysis generated by Qwen2.5-VL and Whisper on the selected presentation.
+      </p>
+      
+      <div class="tab-container" style="width: 100%;">
+        <div class="tab-header" style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border-light); padding-bottom: 8px;">
+          <button class="tab-btn active" onclick="switchTab(0)" style="padding: 8px 16px; border-radius: 8px; cursor: pointer; border: none; background: rgba(255,255,255,0.02); color: var(--text-title); font-weight: bold;">📝 Whisper Audio Transcription</button>
+          <button class="tab-btn" onclick="switchTab(1)" style="padding: 8px 16px; border-radius: 8px; cursor: pointer; border: none; background: transparent; color: var(--text-muted);">🧠 Qwen2.5-VL Reasoning</button>
+        </div>
+        
+        <!-- Tab Content 1: Whisper -->
+        <div class="tab-content active" id="tabContent-0">
+          <div id="whisperContainer" style="padding: 12px; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid var(--border-light); max-height: 250px; overflow-y: auto;">Loading...</div>
+        </div>
+        
+        <!-- Tab Content 2: Qwen -->
+        <div class="tab-content" id="tabContent-1" style="display: none;">
+          <div class="analysis-text" id="qwenContainer" style="padding: 12px; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid var(--border-light); max-height: 250px; overflow-y: auto; font-size: 12.5px; line-height: 1.6;">Loading...</div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /showcaseHome -->
+
+    <!-- Hidden dummy divs to prevent JS display-toggle crashes -->
+    <div id="waitingPlaceholder" style="display: none !important;">
+      <div id="waitingIcon"></div>
+      <div id="waitingTitle"></div>
+      <div id="waitingDesc"></div>
+      <div id="waitingProgressBarContainer">
+        <div id="waitingProgressBar"></div>
+      </div>
+      <div id="waitingProgressMeta"></div>
+    </div>
+    <div id="avatarBadge" style="display: none !important;"></div>
+    <div id="avatarDesc" style="display: none !important;"></div>
+    <div id="lipsyncFineTuningContainer" style="display: none !important;"></div>
+
+    <!-- Full Width Row 2: System Video Library (hidden when the selected project has no real files on disk) -->
+    <div class="present-card" id="videoManagerView" style="margin-top: 2rem; width: 100%; display: none; flex-direction: column;">
+      <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>🗄️</span>
+          <span>System Video Library</span>
+        </div>
+        <button class="btn btn-secondary" onclick="loadVideoList()" style="padding: 6px 12px; font-size: 11px; border-radius: 8px; display: flex; align-items: center; gap: 4px;">
+          🔄 Refresh
+        </button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px; margin-bottom: 12px; line-height: 1.4;">
+        Synthesized or Remotion-rendered files on the system that belong to the selected project — manage, play, or delete.
+      </p>
+      <div class="video-grid-list" id="videoListContainer">
+        <!-- Videos will be populated dynamically -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Outcome modal: plays videos / shows the semantic report on demand -->
+  <div id="outcomeModal" class="outcome-modal" onclick="if (event.target === this) closeOutcomeModal()">
+    <div class="outcome-modal-box">
+      <div class="outcome-modal-header">
+        <span id="outcomeModalTitle">Output</span>
+        <button class="outcome-modal-close" onclick="closeOutcomeModal()" title="Close (Esc)">✕</button>
+      </div>
+      <div class="outcome-modal-body" id="outcomeModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Floating live-run ticker: streams the latest log line while a step runs -->
+  <div id="liveTicker" class="live-ticker" onclick="scrollToActiveStep()" title="Jump to the running step">
+    <span class="ticker-dot"></span>
+    <span class="ticker-step" id="tickerStep">STEP 1</span>
+    <span class="ticker-line" id="tickerLine"></span>
+  </div>
+
+  <!-- Interactive JS logic (plain scripts sharing the global scope; load order: utils → state → behavior → bootstrap) -->
+  <script src="/static/present/core.js?v=1"></script>
+  <script src="/static/present/projects.js?v=13"></script>
+  <script src="/static/present/pipeline.js?v=13"></script>
+  <script src="/static/present/media.js?v=8"></script>
+  <script src="/static/present/main.js?v=1"></script>
+</body>
+</html>

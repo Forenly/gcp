@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub &amp; CI/CD — The Pull Request workflow · Lawn Advisor</title>
+<meta name="description" content="At Forenly, every change reaches users the same way: branch → Pull Request → merge to main → deploy from main. This guide walks that path end to end, with real GitHub screenshots. A Forenly Lab playbook.">
+<style>
+  :root{
+    --green:#1f8a4c; --green-d:#13602f; --green-l:#e8f5ec;
+    --ink:#15231b; --muted:#5b6b61; --line:#e2ebe4; --bg:#f6faf6; --card:#fff;
+    --amber:#c47a12;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.62}
+  a{color:var(--green);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:820px;margin:0 auto;padding:0 22px}
+
+  header.hero{background:linear-gradient(135deg,rgba(8,40,20,.92) 0%,rgba(20,96,47,.82) 60%,rgba(52,181,106,.62) 100%);color:#fff;padding:40px 0 44px}
+  .crumb{font-size:13px;color:rgba(255,255,255,.82);margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .crumb a{color:#fff;opacity:.9}
+  .pill{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:4px 11px;border-radius:999px;font-size:12px;font-weight:600;margin-right:6px}
+  header.hero h1{font-size:33px;font-weight:800;letter-spacing:-.02em;margin:14px 0 10px;line-height:1.14}
+  header.hero p{font-size:16px;color:rgba(255,255,255,.92);max-width:660px}
+
+  main{padding:36px 0 64px}
+  .principle{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;margin-bottom:14px}
+  .principle .k{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--green)}
+  .principle p{margin-top:4px;font-size:14.5px;color:var(--ink)}
+  .lead{font-size:15.5px;color:#2a392f;margin:14px 0 6px}
+
+  h2{font-size:21px;font-weight:800;letter-spacing:-.01em;margin:38px 0 6px;padding-top:18px;border-top:1px solid var(--line)}
+  h2 .part{display:block;font-size:11.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--green);margin-bottom:3px}
+  .step{display:flex;gap:13px;margin:22px 0 6px}
+  .num{flex:none;width:30px;height:30px;border-radius:8px;background:var(--green-l);color:var(--green-d);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .step h3{font-size:16.5px;font-weight:700;margin:3px 0}
+  p{margin:10px 0;color:#2a392f}
+  ul,ol{margin:10px 0 10px 22px} li{margin:5px 0;color:#2a392f}
+  strong{font-weight:700;color:var(--ink)}
+  blockquote{background:var(--green-l);border:1px solid #bfe4cb;border-radius:12px;padding:14px 18px;margin:18px 0;font-weight:600;color:var(--green-d)}
+
+  pre{background:#0c1f14;color:#d6f5e0;border-radius:12px;padding:15px 17px;overflow-x:auto;margin:12px 0;font-size:13.5px;font-family:'Fira Code',ui-monospace,monospace}
+  code{font-family:'Fira Code',ui-monospace,monospace;font-size:.9em;background:#eef4ef;padding:.12em .42em;border-radius:5px}
+  pre code{background:none;padding:0;color:inherit}
+
+  figure{margin:16px 0 6px}
+  figure img{width:100%;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(20,60,30,.10);display:block}
+  figcaption{margin-top:10px;font-size:13.5px;color:var(--muted)}
+  .clicks{list-style:none;margin:10px 0 0 0}
+  .clicks li{padding-left:30px;position:relative;margin:7px 0;font-size:14px}
+  .clicks li .c{position:absolute;left:0;top:1px;width:21px;height:21px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .clicks b{color:var(--green-d)}
+
+  .callout{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:16px 0}
+  .callout .k{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--green)}
+
+  .gloss{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+  .gloss>div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+  .gloss b{font-family:'Fira Code',ui-monospace,monospace;color:var(--green-d);font-size:15px}
+  .gloss .dir{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:3px 0 6px}
+  .gloss p{margin:0;font-size:13.5px}
+  ol.flow{list-style:none;counter-reset:f;margin:14px 0 0 0;padding:0}
+  ol.flow li{counter-increment:f;position:relative;padding:11px 0 11px 42px;border-top:1px solid var(--line)}
+  ol.flow li:first-child{border-top:none}
+  ol.flow li:before{content:counter(f);position:absolute;left:0;top:11px;width:27px;height:27px;border-radius:7px;background:var(--green-l);color:var(--green-d);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.flow b{color:var(--ink)}
+  ol.flow .ex{display:block;font-size:13.5px;color:var(--muted);margin-top:3px}
+
+  hr{border:none;border-top:1px solid var(--line);margin:34px 0}
+  .foot{font-size:13px;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="crumb">
+      <a href="/">Lawn Advisor</a> <span>›</span> <span style="opacity:.7">guides</span> <span>›</span> <span>github &amp; ci/cd</span>
+    </div>
+    <span class="pill">Engineering Workflow</span>
+    <span class="pill">Forenly Lab</span>
+    <h1>The Pull Request workflow</h1>
+    <p>At Forenly, every change reaches users the same way: it goes onto a branch, into a Pull Request the team can review, gets merged to <code>main</code>, and is deployed from <code>main</code>. This guide walks that path end to end, with real screenshots.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="principle">
+      <div class="k">The principle</div>
+      <p>A running demo is not “done.” Work is done when it’s <strong>merged to <code>main</code></strong> and <strong>deployed from <code>main</code></strong> — reviewable, reproducible, and owned by the team.</p>
+    </div>
+    <p class="lead">Code always starts on someone’s machine. A live URL only proves it <em>ran once, there</em> — the team still can’t read it, diff it, comment on it, or reproduce it, and a local build can quietly drift behind <code>main</code>. The path below is how any change gets from a laptop into the project the same way, every time.</p>
+
+    <blockquote>The goal: your change becomes a <strong>Pull Request</strong> people can open and read, gets merged into <code>main</code>, and the live site is then deployed <strong>from <code>main</code></strong> — not from a laptop.</blockquote>
+
+    <!-- OVERVIEW -->
+    <h2><span class="part">Overview</span>The flow at a glance</h2>
+    <p>Four words do all the work. Think of them as <strong>directions</strong> — what moves where:</p>
+    <div class="gloss">
+      <div><b>pull</b><span class="dir">down · GitHub → you</span><p>Get everyone’s latest as your starting point. Does <em>not</em> publish your work.</p></div>
+      <div><b>commit</b><span class="dir">save · local</span><p>Record your edits onto your branch as a checkpoint.</p></div>
+      <div><b>push</b><span class="dir">up · you → GitHub</span><p>Upload your branch so the team can see it.</p></div>
+      <div><b>open a PR</b><span class="dir">propose</span><p>Ask for your branch to go into <code>main</code>. Review happens here.</p></div>
+    </div>
+
+    <p style="margin-top:18px">The full path, shown with a <strong>real Lawn Advisor fix</strong> — the map’s <em>Draw lawn</em> button was throwing <code>getPath() of undefined</code>:</p>
+    <ol class="flow">
+      <li><b>pull</b> — <code>git checkout main &amp;&amp; git pull</code><span class="ex">Start from the latest <code>main</code>, before branching.</span></li>
+      <li><b>branch</b> — <code>git checkout -b fix/draw-lawn-getpath</code><span class="ex">Your own line off <code>main</code>, named for the fix.</span></li>
+      <li><b>edit</b><span class="ex">Make the actual change — the Draw-lawn handler now passes <code>paths:[[]]</code>.</span></li>
+      <li><b>commit</b> — <code>git commit -m "fix(map): Draw lawn threw getPath() of undefined"</code><span class="ex">Save the change locally as a checkpoint.</span></li>
+      <li><b>push</b> — <code>git push -u origin fix/draw-lawn-getpath</code><span class="ex">Upload the branch to GitHub — now the team can see it.</span></li>
+      <li><b>open a PR</b><span class="ex">base <code>main</code> ← compare <code>fix/draw-lawn-getpath</code>.</span></li>
+      <li><b>review / approve</b><span class="ex">On the PR, <em>after</em> push — a teammate reads the diff.</span></li>
+      <li><b>fix if asked</b><span class="ex">More commits → push again; they appear in the PR automatically.</span></li>
+      <li><b>merge</b><span class="ex">The PR goes into <code>main</code>.</span></li>
+      <li><b>deploy</b><span class="ex">Deploy the live site from <code>main</code>.</span></li>
+    </ol>
+    <p>The rest of this guide is these same steps, hands-on, with screenshots.</p>
+
+    <!-- PART A -->
+    <h2><span class="part">Part A · On your computer</span>Get the code out of your machine</h2>
+    <p>Everything here is in the terminal, inside the project folder. This is where work leaves a laptop and reaches GitHub.</p>
+
+    <div class="callout">
+      <div class="k">How branches work on a team</div>
+      <p>No one commits directly to <code>main</code> — it’s the shared, reviewed trunk that everyone deploys from. <strong>Every change starts as its own branch off the latest <code>main</code></strong>. It’s one branch <em>per change</em> (a feature or a fix), not one permanent branch per person: you branch, work, open a PR, it merges into <code>main</code>, you delete the branch — and the next change starts a fresh branch again.</p>
+    </div>
+
+    <div class="step"><div class="num">1</div><div><h3>See what you changed</h3></div></div>
+    <pre>git status</pre>
+    <p>This lists the files you touched. If your work shows up here, it exists locally — but <em>nowhere else yet</em>.</p>
+
+    <div class="step"><div class="num">2</div><div><h3>Put your work on a branch</h3></div></div>
+    <pre>git checkout -b fix/my-change</pre>
+    <p>A branch keeps your work separate from <code>main</code> until it’s reviewed. Name it for what it does.</p>
+
+    <div class="step"><div class="num">3</div><div><h3>Commit it</h3></div></div>
+    <pre>git add -A
+git commit -m "describe what changed and why"</pre>
+
+    <div class="step"><div class="num">4</div><div><h3>Push the branch to GitHub</h3></div></div>
+    <pre>git push -u origin fix/my-change</pre>
+    <p>This is the key step. After it, the code is on GitHub — visible to the team — instead of only on one machine.</p>
+
+    <figure>
+      <img src="/static/img/guide/branches.png" alt="GitHub branches page for the repository">
+      <figcaption>After a push, the branch shows up on the repo’s <b>Branches</b> page (here, <code>github.com/&lt;org&gt;/&lt;repo&gt;/branches</code>). If you can see your branch on GitHub, the hardest part is done.</figcaption>
+    </figure>
+
+    <!-- PART B -->
+    <h2><span class="part">Part B · On GitHub</span>Open a Pull Request</h2>
+    <p>The Pull Request (PR) is the unit of review — where the team reads a change and discusses it. The diff <em>is</em> the conversation.</p>
+
+    <div class="step"><div class="num">5</div><div><h3>Go to the Pull requests tab</h3></div></div>
+    <figure>
+      <img src="/static/img/guide/pulls.png" alt="GitHub Pull requests tab with the New pull request button">
+      <ol class="clicks">
+        <li><span class="c">1</span>Open the repo and click <b>Pull requests</b> in the top tab bar.</li>
+        <li><span class="c">2</span>Click the green <b>New pull request</b> button (top right).</li>
+      </ol>
+      <figcaption>Tip: right after a push, GitHub also shows a yellow “Compare &amp; pull request” banner on the repo home — that button does the same thing.</figcaption>
+    </figure>
+
+    <div class="step"><div class="num">6</div><div><h3>Choose the branch and create it</h3></div></div>
+    <figure>
+      <img src="/static/img/guide/compare.png" alt="GitHub Compare changes page with the Create pull request button">
+      <ol class="clicks">
+        <li><span class="c">1</span>Leave <b>base: main</b> on the left — that’s where the change is going.</li>
+        <li><span class="c">2</span>Set <b>compare: your branch</b> on the right (e.g. <code>fix/my-change</code>).</li>
+        <li><span class="c">3</span>Click the green <b>Create pull request</b> button.</li>
+      </ol>
+      <figcaption>“base” = the destination (<code>main</code>). “compare” = your branch. GitHub shows the exact diff that will be reviewed.</figcaption>
+    </figure>
+
+    <div class="step"><div class="num">7</div><div><h3>Title it, describe it, submit</h3></div></div>
+    <p>Add a short title and a sentence on <em>what</em> and <em>why</em>. Then create the PR. Reviewers comment; you push more commits to the <strong>same branch</strong> and they appear in the PR automatically. When it’s approved, it gets <strong>merged into <code>main</code></strong>.</p>
+
+    <!-- PART C -->
+    <h2><span class="part">Part C · After merge</span>Deploy from main, not a laptop</h2>
+    <div class="step"><div class="num">8</div><div><h3>Redeploy from the merged code</h3></div></div>
+    <p>Once the change is in <code>main</code>, the live site is deployed <strong>from <code>main</code></strong> — so what users see equals what the team reviewed.</p>
+    <pre>git checkout main
+git pull
+# then run the project's deploy from this clean main checkout</pre>
+    <div class="callout">
+      <div class="k">Already shared a local build or URL?</div>
+      <p>Common, and easy to close the loop: open a PR with that exact code (Parts A–B), get it merged, then redeploy from <code>main</code>. Often the live version is simply an older build, and the fix is a deploy, not new code. Then re-share: <em>“Deployed from <code>main</code> @ &lt;commit&gt; — PR #N.”</em></p>
+    </div>
+
+    <h2>Checklist before you say “done”</h2>
+    <ul>
+      <li>The change is on a branch, committed, and <strong>pushed</strong> (the branch is visible on GitHub).</li>
+      <li>There is a <strong>PR</strong> others can open and read.</li>
+      <li>What’s deployed was built <strong>from <code>main</code></strong>, not a local copy.</li>
+      <li>The branch was <strong>up to date with <code>main</code></strong> (no silent drift / missing fixes).</li>
+      <li>The link being shared points at code that exists in the repo.</li>
+    </ul>
+
+    <hr>
+    <p class="foot">A Forenly Lab playbook — a general standard for how we ship. When a teammate needs it, send them the link. These playbooks are the seed of Forenly’s engineering standards. Screenshots are of a public Forenly repo.</p>
+
+  </div>
+</main>
+
+</body>
+</html>

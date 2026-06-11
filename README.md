@@ -44,17 +44,30 @@ The registry of mower models, yards, and past deployment plans lives in
 
 ## Submission requirements (Devpost)
 
-- [ ] Hosted project URL
+- [x] Hosted project URL — **https://lawn.forenly.ai**
 - [x] Public repository
 - [x] LICENSE detectable at the top of the repo — Apache-2.0
-- [ ] ~3 minute demo video
+- [x] ~3 minute demo video — served at [lawn.forenly.ai/walkthrough-videos](https://lawn.forenly.ai/walkthrough-videos) (video binaries live on the deployment, not in git)
 - [x] Selected partner track — **MongoDB MCP**
 - [ ] Completed Devpost submission form
 
+## Tests
+
+Hermetic unit/integration suite (no network, no live MongoDB, no Vertex calls —
+external services are monkeypatched):
+
+```bash
+cd agent
+pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest tests/ -q
+```
+
 ## Status
 
-🚧 Early development. Issues, milestones, and design notes are tracked in this
-repo's Issues tab.
+✅ Live at **https://lawn.forenly.ai** — map-drawn yard input, geo enrichment
+(slope + soil), Gemini tool-loop recommendation grounded in the MongoDB
+registry, and a 4-phase deployment rollout. Issues, milestones, and design
+notes are tracked in this repo's Issues tab.
 
 ## Contributing
 

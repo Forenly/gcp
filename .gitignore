@@ -32,3 +32,15 @@ build/
 /*.png
 ._*
 .DS_Store
+
+# Demo video assets (large binaries, kept on the VM only)
+data/videos/
+agent/src/static/*.mp4
+agent/src/static/*.wav
+agent/src/static/avip_output/
+
+# Editor/backup leftovers
+*.bak
+
+# Internal collaboration docs (not part of the submission)
+docs/Bibi_*

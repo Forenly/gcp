@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forenly AI — Lawn UI Integration Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        :root {
+            --bg-main: #0B0F19;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --accent-primary: #10B981;
+            --accent-blue: #3B82F6;
+            --accent-amber: #F59E0B;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --gradient-hero: linear-gradient(135deg, #0D1527 0%, #070A13 100%);
+            --gradient-accent: linear-gradient(90deg, #10B981 0%, #3B82F6 100%);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .guide-container {
+            max-width: 900px; width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            background: var(--gradient-hero);
+            padding: 56px 50px; border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        .header::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 100%; height: 4px; background: var(--gradient-accent);
+        }
+        .brand {
+            font-size: 14px; text-transform: uppercase; letter-spacing: 3px;
+            color: var(--accent-primary); font-weight: 700; margin-bottom: 18px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .brand-dot {
+            width: 8px; height: 8px; background: var(--accent-primary);
+            border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--accent-primary);
+        }
+        h1 {
+            font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;
+            background: linear-gradient(120deg, #FFFFFF, #9CA3AF);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { font-size: 17px; color: var(--text-muted); max-width: 640px; font-weight: 400; }
+        .content { padding: 46px 50px; }
+        h2 {
+            font-size: 22px; font-weight: 700; margin-top: 44px; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 12px; color: #FFFFFF;
+            border-left: 4px solid var(--accent-primary); padding-left: 15px;
+        }
+        h3 { font-size: 16px; font-weight: 700; color: #fff; margin: 18px 0 8px; }
+        p { color: var(--text-muted); font-size: 15px; margin-bottom: 16px; }
+        strong { color: #E5E7EB; }
+        .step-card {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 24px; margin-bottom: 22px;
+        }
+        .step-num {
+            font-size: 12px; font-weight: 800; text-transform: uppercase;
+            color: var(--accent-blue); letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .step-title { font-size: 18px; font-weight: 700; color: #FFFFFF; margin-bottom: 12px; }
+        code, pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+        pre {
+            background: #060913; border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px; padding: 16px; overflow-x: auto;
+            color: #A7F3D0; margin: 10px 0; line-height: 1.55; white-space: pre;
+        }
+        pre .c { color: #6B7280; }     /* comment */
+        pre .k { color: #93C5FD; }     /* keyword/path */
+        .code-inline {
+            background: rgba(255, 255, 255, 0.08); color: #F3F4F6;
+            padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+        }
+        .src-tag {
+            font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
+            margin-top: -4px; margin-bottom: 12px; display: block;
+        }
+        /* screenshot frame */
+        .screenshot-container {
+            margin: 22px 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: #1e1e1e;
+        }
+        .window-header {
+            background: #1F2937; padding: 10px 16px; display: flex; align-items: center;
+            gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .dot-red { background: #EF4444; } .dot-yellow { background: #F59E0B; } .dot-green { background: #10B981; }
+        .window-title { margin-left: 10px; font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+        .screenshot-img { width: 100%; display: block; height: auto; }
+        .caption { font-size: 12.5px; color: var(--text-muted); margin-top: -6px; margin-bottom: 18px; font-style: italic; }
+        /* terminal card */
+        .terminal {
+            background: #0A0E1A; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+            overflow: hidden; margin: 16px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .terminal pre {
+            background: transparent; border: 0; margin: 0; padding: 18px 20px; color: #D1D5DB; font-size: 12.5px;
+        }
+        .t-prompt { color: var(--accent-primary); font-weight: 600; }
+        .t-cmd { color: #FFFFFF; }
+        .t-comment { color: #6B7280; }
+        .t-out { color: #9CA3AF; }
+        .t-green { color: #34D399; }
+        .t-branch { color: #FBBF24; }
+        /* badges + callouts */
+        .badge-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+        .badge {
+            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent-primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .callout {
+            border-radius: 14px; padding: 16px 18px; margin: 16px 0; font-size: 14px;
+            border: 1px solid var(--border-color); background: rgba(255,255,255,0.02);
+        }
+        .callout-blue { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.07); }
+        .callout-amber { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+        .callout-title { font-weight: 700; color: #fff; margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+        .callout p { margin: 0; color: #C7CDD6; }
+        .tool-tag {
+            display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            background: rgba(16,185,129,0.12); color: var(--accent-primary);
+            border: 1px solid rgba(16,185,129,0.25); border-radius: 6px; padding: 2px 8px; margin: 2px 0;
+        }
+        ul { color: var(--text-muted); font-size: 14.5px; margin: 0 0 16px 20px; }
+        li { margin-bottom: 7px; }
+        .made-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        .made-item { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; }
+        .made-item .what { font-size: 13.5px; color: #E5E7EB; font-weight: 600; margin-bottom: 6px; }
+        .made-item .with { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+        .footer {
+            text-align: center; padding: 36px; border-top: 1px solid var(--border-color);
+            color: var(--text-muted); font-size: 13px; background: #070A13;
+        }
+        @media print {
+            body { padding: 0; }
+            .guide-container { border: 0; border-radius: 0; box-shadow: none; max-width: 100%; }
+            .step-card, .screenshot-container, .terminal, .callout, .made-item { break-inside: avoid; }
+            h2 { break-after: avoid; }
+            /* gradient text-clip leaves a box artifact in print → use a solid fill */
+            h1 { background: none; -webkit-text-fill-color: #FFFFFF; color: #FFFFFF; }
+            .made-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="guide-container">
+        <div class="header">
+            <div class="brand"><span class="brand-dot"></span> Forenly AI · Lawn Advisor</div>
+            <h1>UI Integration Guide</h1>
+            <div class="subtitle">A developer walkthrough for Bibi: where the frontend lives, how to drop in the auth page and map-wizard mockups, and how to ship them through a pull request — using the real code and screens from <code class="code-inline">Forenly/gcp</code>.</div>
+        </div>
+
+        <div class="content">
+            <div class="badge-list">
+                <span class="badge">Google Cloud Rapid Agent Hackathon</span>
+                <span class="badge">MongoDB MCP</span>
+                <span class="badge">FastAPI + Vanilla JS</span>
+                <span class="badge">Live on Cloud Run</span>
+            </div>
+
+            <p>Hi Bibi 👋 — your two ideas (an <strong>auth page</strong> in front of the MongoDB user data, and an upgraded <strong>yard / map wizard</strong>) are exactly the right calls. This guide shows precisely where each one plugs into the existing app, with the real code and live screens, so you can take your mockups all the way into the product.</p>
+
+            <div class="callout">
+                <div class="callout-title">📌 How this guide was produced</div>
+                <p>Everything below is from the live project — no stock art. The screenshots were captured from <code class="code-inline">lawn.forenly.ai</code> with headless Chromium, the code blocks are pasted straight out of <code class="code-inline">agent/src/static/index.html</code>, and the git session shows the real command output from an actual commit. Tooling is credited at the end.</p>
+            </div>
+
+            <h2>📐 1 · Where the frontend lives</h2>
+            <p>The agent is a <strong>FastAPI</strong> backend that serves a single, build-free <strong>vanilla HTML/CSS/JS</strong> file. No framework, no bundler — you edit one file and refresh.</p>
+            <pre><span class="k">agent/src/static/index.html</span>   ← the entire UI (407 lines: markup + CSS + JS)
+<span class="k">agent/src/static/img/</span>          ← drop images here → served at /static/img/...</pre>
+            <p>Any asset you save in <code class="code-inline">img/</code> (e.g. <code class="code-inline">auth_page.png</code>) is immediately live at <code class="code-inline">/static/img/auth_page.png</code>.</p>
+
+            <h2>🖥️ 2 · The current landing page (your baseline)</h2>
+            <p>This is the live site today — your starting canvas. You flagged that it reads a bit like an AI prototype; this is the surface to lift.</p>
+            <div class="screenshot-container">
+                <div class="window-header">
+                    <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+                    <span class="window-title">lawn.forenly.ai — captured live</span>
+                </div>
+                <img class="screenshot-img" src="img/hero_live.png" alt="Live landing page">
+            </div>
+            <p>And here is the real hero markup you'd restyle — note the class hooks (<code class="code-inline">.hero</code>, <code class="code-inline">.badge</code>, <code class="code-inline">.btn-primary</code>) you can repaint with your premium palette:</p>
+            <pre>&lt;header <span class="k">class="hero"</span>&gt;
+  &lt;div class="wrap"&gt;
+    &lt;div class="badge-row"&gt;
+      &lt;span class="badge"&gt;Google Cloud Rapid Agent Hackathon&lt;/span&gt;
+      &lt;span class="badge"&gt;&lt;span class="live-dot"&gt;&lt;/span&gt;Live on Cloud Run&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;h1&gt;Deployment Advisor for&lt;br&gt;Autonomous Outdoor Robots&lt;/h1&gt;
+    &lt;p class="lede"&gt;Starting with robotic mowers, the agent analyzes terrain,
+       slope, soil, boundaries and historical deployments in MongoDB…&lt;/p&gt;
+    &lt;div class="cta-row"&gt;
+      &lt;button class="btn btn-primary"&gt;Try the advisor →&lt;/button&gt;
+      &lt;a class="btn btn-ghost" href="https://github.com/Forenly/gcp"&gt;View on GitHub&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/header&gt;</pre>
+            <span class="src-tag">— real excerpt, agent/src/static/index.html (lines 119–134)</span>
+
+            <h2>🗺️ 3 · Your idea #1 — the yard / map wizard</h2>
+            <p>You spotted the atlas/globe and improved it. Good instinct: the map is the screen users spend the most time on, so it's the highest-impact one to land. Here's the wizard on the live site right now:</p>
+            <div class="screenshot-container">
+                <div class="window-header">
+                    <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+                    <span class="window-title">lawn.forenly.ai — "Try the advisor" map wizard</span>
+                </div>
+                <img class="screenshot-img" src="img/map_wizard.png" alt="Map wizard live">
+            </div>
+            <p>Under the hood it's plain Google Maps: you draw a polygon and we compute the area. This is the exact code you'd build your wizard UI around:</p>
+            <pre>function <span class="k">startDraw</span>(){
+  clearDraw(); drawing = true;
+  poly = new google.maps.Polygon({ map, paths:[[]],
+    fillColor:'#34b56a', fillOpacity:.28, strokeColor:'#13602f',
+    strokeWeight:2, editable:true });
+  poly.getPath().addListener('insert_at', syncPolygon);
+}
+function <span class="k">syncPolygon</span>(){
+  const path = poly.getPath();
+  const area = google.maps.geometry.spherical.computeArea(path); <span class="c">// m²</span>
+  $('area').value = Math.round(area);
+}</pre>
+            <span class="src-tag">— real excerpt (trimmed), agent/src/static/index.html (lines 371–402)</span>
+
+            <div class="callout callout-amber">
+                <div class="callout-title">⚠️ Heads-up for the wizard</div>
+                <p>Google's classic <strong>Drawing Library</strong> is deprecated (removed May 2026). We already avoid it with manual polygons (above), so we're safe. If you want a richer "draw your yard" UX, the clean modern path is <strong>TerraDraw</strong> — one drawing API that keeps Google satellite tiles. Sketch:</p>
+            </div>
+            <pre><span class="c">// optional upgrade — keeps Google satellite, modern drawing API</span>
+import { TerraDraw, TerraDrawPolygonMode } from "terra-draw";
+import { TerraDrawGoogleMapsAdapter } from "terra-draw-google-maps-adapter";
+
+const draw = new TerraDraw({
+  adapter: new TerraDrawGoogleMapsAdapter({ map, lib }),
+  modes:   [new TerraDrawPolygonMode()],
+});
+draw.start();
+<span class="c">// area:  import area from "@turf/area";  area(feature)  → m²</span></pre>
+            <p style="font-size:13.5px">Not required for the hackathon — the current manual-polygon code works. This is just the direction if we want to invest in the wizard later.</p>
+
+            <h2>🔐 4 · Your idea #2 — the authentication page</h2>
+            <p>Your reasoning is spot on: the moment real user + yard records live in MongoDB, they need a login boundary. For the FastAPI + MongoDB stack, the cleanest fit is <strong>fastapi-users</strong> with the <strong>Beanie</strong> (MongoDB) adapter — it gives register / login / JWT out of the box, so the backend matches your auth-page mockup:</p>
+            <pre><span class="c"># MongoDB stores user data → put a login boundary in front of it</span>
+from fastapi_users import FastAPIUsers
+from fastapi_users.authentication import (
+    JWTStrategy, BearerTransport, AuthenticationBackend)
+
+class <span class="k">User</span>(BeanieBaseUser):        <span class="c"># persisted in MongoDB</span>
+    pass
+
+bearer  = BearerTransport(tokenUrl="auth/jwt/login")
+backend = AuthenticationBackend(
+    name="jwt", transport=bearer,
+    get_strategy=lambda: JWTStrategy(secret=SECRET, lifetime_seconds=3600))
+
+<span class="c"># app.include_router(users.get_auth_router(backend), prefix="/auth/jwt")</span></pre>
+            <p style="font-size:13.5px">Your job stays on the frontend: build the login / sign-up screen in <code class="code-inline">index.html</code> (or a new <code class="code-inline">login.html</code>) that POSTs to <code class="code-inline">/auth/jwt/login</code>. We can wire the backend route in parallel so nothing blocks you.</p>
+
+            <h2>🚀 5 · Hot-reload locally, then open a PR</h2>
+            <div class="step-card">
+                <div class="step-num">Step 1</div>
+                <div class="step-title">Run the hot-reload dev server</div>
+                <p>From the project root — it serves the files with Uvicorn + file-watch reload:</p>
+                <pre>./dev.sh</pre>
+                <p>Open <code class="code-inline">http://localhost:8000</code>, save <code class="code-inline">index.html</code>, refresh — your changes appear instantly.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">Step 2</div>
+                <div class="step-title">Branch, commit &amp; open a Pull Request</div>
+                <p>And yes — <strong>you're absolutely allowed to edit the code</strong> 🙂. Just work on a branch and open a PR so we review together. This is the real command output from doing exactly that:</p>
+                <div class="terminal">
+<pre><span class="t-comment"># 1) create your feature branch</span>
+<span class="t-prompt">$</span> <span class="t-cmd">git checkout -b feature/bibi-ui-mockups</span>
+<span class="t-out">Switched to a new branch '</span><span class="t-branch">feature/bibi-ui-mockups</span><span class="t-out">'</span>
+
+<span class="t-comment"># 2) see what changed, then stage + commit</span>
+<span class="t-prompt">$</span> <span class="t-cmd">git status -s</span>
+<span class="t-out"> M agent/src/static/index.html
+?? agent/src/static/img/</span>
+<span class="t-prompt">$</span> <span class="t-cmd">git add agent/src/static</span>
+<span class="t-prompt">$</span> <span class="t-cmd">git commit -m "feat(ui): add auth page + map wizard mockups"</span>
+<span class="t-out">[</span><span class="t-branch">feature/bibi-ui-mockups</span> <span class="t-green">e916201</span><span class="t-out">] feat(ui): add auth page + map wizard mockups
+ 2 files changed, 2 insertions(+), 1 deletion(-)</span>
+
+<span class="t-comment"># 3) push the branch and open a PR on GitHub</span>
+<span class="t-prompt">$</span> <span class="t-cmd">git push origin feature/bibi-ui-mockups</span>
+<span class="t-prompt">$</span> <span class="t-cmd">git log --oneline -2</span>
+<span class="t-green">e916201</span><span class="t-out"> feat(ui): add auth page + map wizard mockups
+</span><span class="t-green">7e76980</span><span class="t-out"> baseline</span></pre>
+                </div>
+                <p style="font-size:13px">Then on GitHub, click <strong>“Compare &amp; pull request”</strong> on your branch — tag me as reviewer and we ship it. 🚀</p>
+            </div>
+
+            <h2>🧰 How each part of this guide was made</h2>
+            <p>So you can reproduce or remix it — only tools we actually ran are credited:</p>
+            <div class="made-grid">
+                <div class="made-item"><div class="what">📸 Live UI screenshots</div><div class="with">Playwright · headless Chromium → lawn.forenly.ai</div></div>
+                <div class="made-item"><div class="what">⌨️ Git session output</div><div class="with">real git commands in a temp repo, captured</div></div>
+                <div class="made-item"><div class="what">💻 Code excerpts</div><div class="with">pasted verbatim from agent/src/static/index.html</div></div>
+                <div class="made-item"><div class="what">📄 This document</div><div class="with">self-contained HTML → PDF via Playwright print</div></div>
+            </div>
+            <p style="margin-top:16px; font-size:13.5px">For richer lessons next, the modern toolchain we'd reach for:
+                <span class="tool-tag">CodeHike — scrollytelling code walkthroughs</span>
+                <span class="tool-tag">VHS — reproducible terminal GIFs</span>
+                <span class="tool-tag">Motion Canvas — animated explainers</span>
+                <span class="tool-tag">Slidev — dev slide decks</span>
+                <span class="tool-tag">Screen Studio / Tella — auto-zoom screencasts</span>
+                <span class="tool-tag">Scribe — auto step-by-step guides</span>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>Forenly AI · Lawn Advisor — Google Cloud Rapid Agent Hackathon · github.com/Forenly/gcp</p>
+        </div>
+    </div>
+</body>
+</html>
